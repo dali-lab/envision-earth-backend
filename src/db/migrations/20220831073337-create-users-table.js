@@ -23,7 +23,7 @@ module.exports = {
       },
       role: {
         type: Sequelize.ENUM('UNVERIFIED', 'USER', 'ADMIN'),
-        defaultValue: 'USER',
+        defaultValue: 'UNVERIFIED',
         allowNull: false,
       },
       createdAt: {

@@ -1,6 +1,5 @@
-# CRUD Template - Backend - PostgreSQL
-
-This repository is an optional backend starter pack for new DALI React projects. Installation and setup instructions are included below. You should eventually customize this README file with project-specific documentation.
+# Grazing Earth
+Backend for the [Grazing Earth mobile app](https://github.com/dali-lab/grazing-earth-backend).
 
 ## Tech Stack
   - [Express](https://expressjs.com/)
