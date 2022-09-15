@@ -1,5 +1,5 @@
 # Grazing Earth
-Backend for the [Grazing Earth mobile app](https://github.com/dali-lab/grazing-earth-backend).
+Backend for the [Grazing Earth mobile app](https://github.com/dali-lab/grazing-earth-mobile).
 
 ## Tech Stack
   - [Express](https://expressjs.com/)
