@@ -45,7 +45,7 @@ Backend for the [Grazing Earth mobile app](https://github.com/dali-lab/grazing-e
     - Ensure [Homebrew](https://brew.sh/) is installed
     - Run `brew install postgresql` if PostgreSQL isn't installed
     - If you'd like to use a GUI to interact with PostgreSQL, download one. We recommend [Postico](https://eggerapps.at/postico/)
-3. Create a PostgreSQL DB called `backend_template` if setting up locally, using your GUI of choice (Postico or pgAdmin).
+3. Create a PostgreSQL DB called `grazing_earth` if setting up locally, using your GUI of choice (Postico or pgAdmin).
 4. Set up Google Developer API (for email sending)
    - You will need to enable [2 Step Auth](https://support.google.com/accounts/answer/185839) on your desired Google account and generate an [App Specific Password](https://myaccount.google.com/security). See this [StackExchange thread](https://stackoverflow.com/questions/19877246/nodemailer-with-gmail-and-nodejs?answertab=modifieddesc#tab-top) for more details.
    - Alternatively just comment out all the nodemailer stuff if you don't want to use/need to set up the email service.
@@ -55,7 +55,7 @@ Backend for the [Grazing Earth mobile app](https://github.com/dali-lab/grazing-e
   - ```
     AUTH_SECRET=*secret assortment of characters used for encryption*
     PORT=*insert desired backend server port here*
-    DATABASE_URL=postgres://username:password@localhost:5432/backend_template
+    DATABASE_URL=postgres://username:password@localhost:5432/grazing_earth
     GOOGLE_CLIENT_EMAIL=*Google Developer API email*
     GOOGLE_CLIENT_PASS=*Google Developer API password*
     ```
