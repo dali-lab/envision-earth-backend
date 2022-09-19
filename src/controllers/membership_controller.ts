@@ -22,7 +22,6 @@ const createMembership: RequestHandler = async (req: ValidatedRequest<CreateMemb
 
     res.status(201).json(newMembership);
   } catch (error) {
-    console.info(error);
     next(error);
   }
 };

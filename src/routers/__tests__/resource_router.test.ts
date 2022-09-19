@@ -116,7 +116,7 @@ describe('Working resource router', () => {
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
-      expect(res.body.length).toBe(7);
+      expect(res.body.length).toBe(5);
       expect(getManySpy).toHaveBeenCalled();
       getManySpy.mockClear();
     });

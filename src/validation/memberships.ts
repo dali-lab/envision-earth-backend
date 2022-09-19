@@ -2,7 +2,7 @@ import joi from 'joi';
 import { ValidatedRequestSchema, ContainerTypes } from 'express-joi-validation';
 import { IMembership } from 'db/models/membership';
 
-export const CreateMembershipSchema = joi.object<IMembership>({
+export const CreateMembershipSchema = joi.object<Omit<IMembership, 'id' | 'role'>>({
   teamId: joi.string().required().error(() => 'Create membership expecting a teamId'),
   userId: joi.string().required().error(() => 'Create membership expecting a userId'),
 });

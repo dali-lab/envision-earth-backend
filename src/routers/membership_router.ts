@@ -9,7 +9,7 @@ import { TeamScopes } from 'db/models/team';
 import { membershipController } from 'controllers';
 import { errorHandler } from 'errors';
 import { validationErrorHandler } from 'validation';
-import { UpdateMembershipSchema } from 'validation/memberships';
+import { CreateMembershipSchema, UpdateMembershipSchema } from 'validation/memberships';
 
 const router = express();
 const validator = createValidator({ passError: true });
@@ -23,9 +23,9 @@ if (process.env.NODE_ENV === 'test') {
 
 router.route('/')
   .post(
-    // requireScope(UserScopes.User),
-    // requireMembership(TeamScopes.Owner),
-    // validator.body(CreateMembershipSchema),
+    requireScope(UserScopes.User),
+    requireMembership(TeamScopes.Owner),
+    validator.body(CreateMembershipSchema),
     membershipController.createMembership,
   );
 
