@@ -86,7 +86,7 @@ module.exports = {
       throw e;
     }
   },
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
       await queryInterface.bulkDelete('users', null, { transaction });
