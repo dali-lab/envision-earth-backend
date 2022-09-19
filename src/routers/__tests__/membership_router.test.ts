@@ -40,7 +40,6 @@ describe('Working membership router', () => {
   });
 
   describe('POST /', () => {
-    /*
     it('requires valid permissions', async () => {
       const createSpy = jest.spyOn(membershipService, 'createMembership');
 
@@ -79,7 +78,7 @@ describe('Working membership router', () => {
         membership[key] = typeof membership[key] === 'number'
           ? 'some string'
           : 0;
-f
+          
         const res = await request
           .post('/')
           .set('Authorization', 'Bearer dummy_token')
@@ -91,7 +90,6 @@ f
       });
       await Promise.all(attempts);
     });
-    */
 
     it('creates membership when body is valid', async () => {
       const createSpy = jest.spyOn(membershipService, 'createMembership');
