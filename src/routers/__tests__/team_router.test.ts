@@ -1,32 +1,29 @@
 import supertest from 'supertest';
-import resourceRouter from 'routers/resource_router';
-import { resourceService } from 'services';
+import teamRouter from 'routers/team_router';
+import { teamService } from 'services';
 import db from '../../db/db';
-import { IResource } from '../../db/models/resource';
+import { ITeam } from '../../db/models/team';
 
-const request = supertest(resourceRouter);
+const request = supertest(teamRouter);
 
-const resourceDataA: Omit<IResource, 'id'> = {
-  title: 'Flu Season',
-  description: 'Leslie comes down with the flu while planning the local Harvest Festival; Andy and Ron bond.',
-  value: 32,
+const teamDataA: Omit<ITeam, 'id'> = {
+  name: 'Team A',
 };
 
-const resourceDataB: Omit<IResource, 'id'> = {
-  title: 'Time Capsule',
-  description: 'Leslie plans to bury a time capsule that summarizes life in Pawnee; Andy asks Chris for help.',
-  value: 33,
+const teamDataB: Omit<ITeam, 'id'> = {
+  name: 'Team B',
 };
 
 let validId = '';
-const invalidId = '365e5281-bbb5-467c-a92d-2f4041828948';
+const invalidId = '4e86ecda-baaf-4ad4-b1a5-04eaaa0c3252';
 
 // Mocks requireAuth server middleware
 jest.mock('../../auth/requireAuth');
 jest.mock('../../auth/requireScope');
+jest.mock('../../auth/requireMembership');
 jest.mock('../../auth/requireSelf');
 
-describe('Working resource router', () => {
+describe('Working team router', () => {
   beforeAll(async () => {
     try {
       await db.authenticate();
@@ -38,27 +35,27 @@ describe('Working resource router', () => {
 
   describe('POST /', () => {
     it('requires valid permissions', async () => {
-      const createSpy = jest.spyOn(resourceService, 'createResource');
+      const createSpy = jest.spyOn(teamService, 'createTeam');
 
       const res = await request
         .post('/')
-        .send(resourceDataA);
+        .send(teamDataA);
 
       expect(res.status).toBe(403);
       expect(createSpy).not.toHaveBeenCalled();
     });
 
     it('blocks creation when missing field', async () => {
-      const createSpy = jest.spyOn(resourceService, 'createResource');
+      const createSpy = jest.spyOn(teamService, 'createTeam');
 
-      const attempts = Object.keys(resourceDataA).map(async (key) => {
-        const resource = { ...resourceDataA };
-        delete resource[key];
+      const attempts = Object.keys(teamDataA).map(async (key) => {
+        const team = { ...teamDataA };
+        delete team[key];
 
         const res = await request
           .post('/')
           .set('Authorization', 'Bearer dummy_token')
-          .send(resource);
+          .send(team);
 
         expect(res.status).toBe(500);
         expect(res.body.errors.length).toBe(1);
@@ -68,18 +65,18 @@ describe('Working resource router', () => {
     });
 
     it('blocks creation when field invalid', async () => {
-      const createSpy = jest.spyOn(resourceService, 'createResource');
+      const createSpy = jest.spyOn(teamService, 'createTeam');
 
-      const attempts = Object.keys(resourceDataA).map(async (key) => {
-        const resource = { ...resourceDataA };
-        resource[key] = typeof resource[key] === 'number'
+      const attempts = Object.keys(teamDataA).map(async (key) => {
+        const team = { ...teamDataA };
+        team[key] = typeof team[key] === 'number'
           ? 'some string'
           : 0;
 
         const res = await request
           .post('/')
           .set('Authorization', 'Bearer dummy_token')
-          .send(resource);
+          .send(team);
 
         expect(res.status).toBe(500);
         expect(res.body.errors.length).toBe(1);
@@ -88,17 +85,17 @@ describe('Working resource router', () => {
       await Promise.all(attempts);
     });
 
-    it('creates resource when body is valid', async () => {
-      const createSpy = jest.spyOn(resourceService, 'createResource');
+    it('creates team when body is valid', async () => {
+      const createSpy = jest.spyOn(teamService, 'createTeam');
 
       const res = await request
         .post('/')
         .set('Authorization', 'Bearer dummy_token')
-        .send(resourceDataA);
+        .send(teamDataA);
 
       expect(res.status).toBe(201);
-      Object.keys(resourceDataA).forEach((key) => {
-        expect(res.body[key]).toBe(resourceDataA[key]);
+      Object.keys(teamDataA).forEach((key) => {
+        expect(res.body[key]).toBe(teamDataA[key]);
       });
       expect(createSpy).toHaveBeenCalled();
       createSpy.mockClear();
@@ -107,40 +104,29 @@ describe('Working resource router', () => {
     });
   });
 
-  describe('GET /', () => {
-    it('returns all created resources', async () => {
-      const getManySpy = jest.spyOn(resourceService, 'getResources');
+  describe('GET /:id', () => {
+    it('returns 404 when team not found', async () => {
+      const getSpy = jest.spyOn(teamService, 'getTeams');
 
       const res = await request
-        .get('/')
+        .get(`/${invalidId}`)
         .set('Authorization', 'Bearer dummy_token');
-
-      expect(res.status).toBe(200);
-      expect(res.body.length).toBe(5);
-      expect(getManySpy).toHaveBeenCalled();
-      getManySpy.mockClear();
-    });
-  });
-
-  describe('GET /:id', () => {
-    it('returns 404 when resource not found', async () => {
-      const getSpy = jest.spyOn(resourceService, 'getResources');
-
-      const res = await request.get(`/${invalidId}`);
 
       expect(res.status).toBe(404);
       expect(getSpy).rejects.toThrowError();
       getSpy.mockClear();
     });
 
-    it('returns resource if found', async () => {
-      const getSpy = jest.spyOn(resourceService, 'getResources');
+    it('returns team if found', async () => {
+      const getSpy = jest.spyOn(teamService, 'getTeams');
 
-      const res = await request.get(`/${validId}`);
+      const res = await request
+        .get(`/${validId}`)
+        .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
-      Object.keys(resourceDataA).forEach((key) => {
-        expect(res.body[key]).toBe(resourceDataA[key]);
+      Object.keys(teamDataA).forEach((key) => {
+        expect(res.body[key]).toBe(teamDataA[key]);
       });
       expect(getSpy).toHaveBeenCalled();
       getSpy.mockClear();
@@ -149,23 +135,23 @@ describe('Working resource router', () => {
 
   describe('PATCH /:id', () => {
     it('requires valid permissions', async () => {
-      const updateSpy = jest.spyOn(resourceService, 'editResources');
+      const updateSpy = jest.spyOn(teamService, 'editTeams');
 
       const res = await request
         .patch(`/${validId}`)
-        .send({ value: 32 });
+        .send({ name: 'Cool Team A' });
 
       expect(res.status).toBe(403);
       expect(updateSpy).not.toHaveBeenCalled();
     });
 
-    it('returns 404 if resource not found', async () => {
-      const updateSpy = jest.spyOn(resourceService, 'editResources');
+    it('returns 404 if team not found', async () => {
+      const updateSpy = jest.spyOn(teamService, 'editTeams');
 
       const res = await request
         .patch(`/${invalidId}`)
         .set('Authorization', 'Bearer dummy_token')
-        .send({ value: 32 });
+        .send({ name: 'Cool Team A' });
 
       expect(res.status).toBe(404);
       expect(updateSpy).rejects.toThrowError();
@@ -173,11 +159,11 @@ describe('Working resource router', () => {
     });
 
     it('blocks creation when field invalid', async () => {
-      const updateSpy = jest.spyOn(resourceService, 'editResources');
+      const updateSpy = jest.spyOn(teamService, 'editTeams');
 
-      const attempts = Object.keys(resourceDataA).concat('otherkey').map(async (key) => {
-        const resourceUpdate = {
-          [key]: typeof resourceDataA[key] === 'number'
+      const attempts = Object.keys(teamDataA).concat('otherkey').map(async (key) => {
+        const teamUpdate = {
+          [key]: typeof teamDataA[key] === 'number'
             ? 'some string'
             : 0,
         };
@@ -185,7 +171,7 @@ describe('Working resource router', () => {
         const res = await request
           .patch(`/${validId}`)
           .set('Authorization', 'Bearer dummy_token')
-          .send(resourceUpdate);
+          .send(teamUpdate);
 
         expect(res.status).toBe(400);
         expect(res.body.errors.length).toBe(1);
@@ -194,36 +180,38 @@ describe('Working resource router', () => {
       await Promise.all(attempts);
     });
 
-    it('updates resource when body is valid', async () => {
-      const updateSpy = jest.spyOn(resourceService, 'editResources');
+    it('updates team when body is valid', async () => {
+      const updateSpy = jest.spyOn(teamService, 'editTeams');
 
-      const attempts = Object.keys(resourceDataB).map(async (key) => {
-        const resourceUpdate = { [key]: resourceDataB[key] };
+      const attempts = Object.keys(teamDataB).map(async (key) => {
+        const teamUpdate = { [key]: teamDataB[key] };
 
         const res = await request
           .patch(`/${validId}`)
           .set('Authorization', 'Bearer dummy_token')
-          .send(resourceUpdate);
+          .send(teamUpdate);
 
         expect(res.status).toBe(200);
-        expect(res.body[key]).toBe(resourceDataB[key]);
+        expect(res.body[key]).toBe(teamDataB[key]);
       });
       await Promise.all(attempts);
 
-      expect(updateSpy).toHaveBeenCalledTimes(Object.keys(resourceDataB).length);
+      expect(updateSpy).toHaveBeenCalledTimes(Object.keys(teamDataB).length);
       updateSpy.mockClear();
 
-      const res = await request.get(`/${validId}`);
+      const res = await request
+        .get(`/${validId}`)
+        .set('Authorization', 'Bearer dummy_token');
 
-      Object.keys(resourceDataB).forEach((key) => {
-        expect(res.body[key]).toBe(resourceDataB[key]);
+      Object.keys(teamDataB).forEach((key) => {
+        expect(res.body[key]).toBe(teamDataB[key]);
       });
     });
   });
 
   describe('DELETE /:id', () => {
     it('requires valid permissions', async () => {
-      const deleteSpy = jest.spyOn(resourceService, 'deleteResources');
+      const deleteSpy = jest.spyOn(teamService, 'deleteTeams');
 
       const res = await request.delete(`/${validId}`);
 
@@ -231,8 +219,8 @@ describe('Working resource router', () => {
       expect(deleteSpy).not.toHaveBeenCalled();
     });
 
-    it('returns 404 if resource not found', async () => {
-      const deleteSpy = jest.spyOn(resourceService, 'deleteResources');
+    it('returns 404 if team not found', async () => {
+      const deleteSpy = jest.spyOn(teamService, 'deleteTeams');
 
       const res = await request
         .delete(`/${invalidId}`)
@@ -243,8 +231,8 @@ describe('Working resource router', () => {
       deleteSpy.mockClear();
     });
 
-    it('deletes resource', async () => {
-      const deleteSpy = jest.spyOn(resourceService, 'deleteResources');
+    it('deletes team', async () => {
+      const deleteSpy = jest.spyOn(teamService, 'deleteTeams');
 
       const res = await request
         .delete(`/${validId}`)
@@ -254,7 +242,9 @@ describe('Working resource router', () => {
       expect(deleteSpy).toHaveBeenCalled();
       deleteSpy.mockClear();
 
-      const getRes = await request.get(`/${validId}`);
+      const getRes = await request
+        .get(`/${validId}`)
+        .set('Authorization', 'Bearer dummy_token');
       expect(getRes.status).toBe(404);
     });
   });

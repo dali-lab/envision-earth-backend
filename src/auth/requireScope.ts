@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import passport from 'passport';
-import { isSubScope } from 'auth/scopes';
+import { isUserSubScope } from 'auth/userScopes';
 import { IUser, UserScopes } from 'db/models/user';
 
 /**
@@ -12,7 +12,10 @@ const requireScope = (scope: UserScopes): RequestHandler => (req, res, next) => 
   passport.authenticate('jwt', { session: false }, function (err, user: IUser, info) {
     if (err) { return next(err); }
     if (!user) { return res.status(401).json({ message: info?.message || 'Error authenticating email and password' }); }
-    if (!isSubScope(user.role, scope)) { return res.status(403).json({ message: 'Unauthorized' }); }
+    if (!isUserSubScope(user.role, scope)) { 
+      console.log('User scope reject');
+      return res.status(403).json({ message: 'Unauthorized' }); 
+    }
 
     req.user = user;
     return next();
