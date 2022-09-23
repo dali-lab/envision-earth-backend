@@ -1,27 +1,31 @@
 import supertest from 'supertest';
-import membershipRouter from 'routers/membership_router';
-import { membershipService } from 'services';
+import herdRouter from 'routers/herd_router';
+import { herdService } from 'services';
 import db from '../../db/db';
-import { IMembership } from '../../db/models/membership';
-import { TeamScopes } from 'db/models/team';
+import { IHerd } from '../../db/models/herd';
 
-const request = supertest(membershipRouter);
+const request = supertest(herdRouter);
 
 const idTeam = '6aab56d3-ac8c-4f3b-a59b-c03e51c76e5d'; // from seeder
-const idUser = '68b0d858-9e75-49b0-902e-2b587bd9a996'; // from seeder
 
-const membershipDataA: Omit<IMembership, 'id' | 'role'> = {
+const herdDataA: Omit<IHerd, 'id'> = {
   teamId: idTeam,
-  userId: idUser,
+  species: 'Holstein Friesian',
+  count: 10,
+  breedingDate: new Date('2022-04-21 21:50:56.305-04'),
+  calvingDate: new Date('2022-08-21 21:50:56.305-04'),
 };
 
-const membershipDataB: Omit<IMembership, 'id' | 'role'> = {
+const herdDataB: Omit<IHerd, 'id'> = {
   teamId: idTeam,
-  userId: idUser,
+  species: 'Swiss Fleckvieh',
+  count: 12,
+  breedingDate: new Date('2022-05-21 21:50:56.305-04'),
+  calvingDate: new Date('2022-09-21 21:50:56.305-04'),
 };
 
 let validId = '';
-const invalidId = 'e6482833-2b7e-4306-9387-c5467864d93d';
+const invalidId = '048348e1-24ac-4d74-bb10-4e07e98a4d0b';
 
 // Mocks requireAuth server middleware
 jest.mock('../../auth/requireAuth');
@@ -29,7 +33,7 @@ jest.mock('../../auth/requireScope');
 jest.mock('../../auth/requireMembership');
 jest.mock('../../auth/requireSelf');
 
-describe('Working membership router', () => {
+describe('Working herd router', () => {
   beforeAll(async () => {
     try {
       await db.authenticate();
@@ -41,27 +45,27 @@ describe('Working membership router', () => {
 
   describe('POST /', () => {
     it('requires valid permissions', async () => {
-      const createSpy = jest.spyOn(membershipService, 'createMembership');
+      const createSpy = jest.spyOn(herdService, 'createHerd');
 
       const res = await request
         .post('/')
-        .send(membershipDataA);
+        .send(herdDataA);
 
       expect(res.status).toBe(403);
       expect(createSpy).not.toHaveBeenCalled();
     });
 
     it('blocks creation when missing field', async () => {
-      const createSpy = jest.spyOn(membershipService, 'createMembership');
+      const createSpy = jest.spyOn(herdService, 'createHerd');
 
-      const attempts = Object.keys(membershipDataA).map(async (key) => {
-        const membership = { ...membershipDataA };
-        delete membership[key];
+      const attempts = Object.keys(herdDataA).map(async (key) => {
+        const herd = { ...herdDataA };
+        delete herd[key];
 
         const res = await request
           .post('/')
           .set('Authorization', 'Bearer dummy_token')
-          .send(membership);
+          .send(herd);
 
         expect(res.status).toBe(500);
         expect(res.body.errors.length).toBe(1);
@@ -71,18 +75,22 @@ describe('Working membership router', () => {
     });
 
     it('blocks creation when field invalid', async () => {
-      const createSpy = jest.spyOn(membershipService, 'createMembership');
+      const createSpy = jest.spyOn(herdService, 'createHerd');
 
-      const attempts = Object.keys(membershipDataA).map(async (key) => {
-        const membership = { ...membershipDataA };
-        membership[key] = typeof membership[key] === 'number'
-          ? 'some string'
-          : 0;
-          
+      const attempts = Object.keys(herdDataA).map(async (key) => {
+        const herd = { ...herdDataA };
+        if (typeof herd[key] === 'number') {
+          herd[key] = 'some string';
+        } else if (typeof herd[key] === 'object') {
+          herd[key] = undefined;
+        } else {
+          herd[key] = 0;
+        }
+
         const res = await request
           .post('/')
           .set('Authorization', 'Bearer dummy_token')
-          .send(membership);
+          .send(herd);
 
         expect(res.status).toBe(500);
         expect(res.body.errors.length).toBe(1);
@@ -91,17 +99,19 @@ describe('Working membership router', () => {
       await Promise.all(attempts);
     });
 
-    it('creates membership when body is valid', async () => {
-      const createSpy = jest.spyOn(membershipService, 'createMembership');
+    it('creates herd when body is valid', async () => {
+      const createSpy = jest.spyOn(herdService, 'createHerd');
 
       const res = await request
         .post('/')
         .set('Authorization', 'Bearer dummy_token')
-        .send(membershipDataA);
+        .send(herdDataA);
 
       expect(res.status).toBe(201);
-      Object.keys(membershipDataA).forEach((key) => {
-        expect(res.body[key]).toBe(membershipDataA[key]);
+      Object.keys(herdDataA).forEach((key) => {
+        if (key === 'breedingDate' || key === 'calvingDate') {
+          expect(new Date(res.body[key])).toEqual(herdDataA[key]);
+        } else expect(res.body[key]).toBe(herdDataA[key]);
       });
       expect(createSpy).toHaveBeenCalled();
       createSpy.mockClear();
@@ -111,8 +121,8 @@ describe('Working membership router', () => {
   });
 
   describe('GET /:id', () => {
-    it('returns 404 when membership not found', async () => {
-      const getSpy = jest.spyOn(membershipService, 'getMemberships');
+    it('returns 404 when herd not found', async () => {
+      const getSpy = jest.spyOn(herdService, 'getHerds');
 
       const res = await request
         .get(`/${invalidId}`)
@@ -123,16 +133,18 @@ describe('Working membership router', () => {
       getSpy.mockClear();
     });
 
-    it('returns membership if found', async () => {
-      const getSpy = jest.spyOn(membershipService, 'getMemberships');
+    it('returns herd if found', async () => {
+      const getSpy = jest.spyOn(herdService, 'getHerds');
 
       const res = await request
         .get(`/${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
-      Object.keys(membershipDataA).forEach((key) => {
-        expect(res.body[key]).toBe(membershipDataA[key]);
+      Object.keys(herdDataA).forEach((key) => {
+        if (key === 'breedingDate' || key === 'calvingDate') {
+          expect(new Date(res.body[key])).toEqual(herdDataA[key]);
+        } else expect(res.body[key]).toBe(herdDataA[key]);
       });
       expect(getSpy).toHaveBeenCalled();
       getSpy.mockClear();
@@ -141,23 +153,23 @@ describe('Working membership router', () => {
 
   describe('PATCH /:id', () => {
     it('requires valid permissions', async () => {
-      const updateSpy = jest.spyOn(membershipService, 'editMemberships');
+      const updateSpy = jest.spyOn(herdService, 'editHerds');
 
       const res = await request
         .patch(`/${validId}`)
-        .send({ teamId: membershipDataB.teamId, userId: membershipDataB.teamId });
+        .send(herdDataB);
 
       expect(res.status).toBe(403);
       expect(updateSpy).not.toHaveBeenCalled();
     });
 
-    it('returns 404 if membership not found', async () => {
-      const updateSpy = jest.spyOn(membershipService, 'editMemberships');
+    it('returns 404 if herd not found', async () => {
+      const updateSpy = jest.spyOn(herdService, 'editHerds');
 
       const res = await request
         .patch(`/${invalidId}`)
         .set('Authorization', 'Bearer dummy_token')
-        .send({ id: invalidId, teamId: membershipDataB.teamId, userId: membershipDataB.teamId, role: TeamScopes.Contributor });
+        .send({ ...herdDataB, id: invalidId });
 
       expect(res.status).toBe(404);
       expect(updateSpy).rejects.toThrowError();
@@ -165,19 +177,26 @@ describe('Working membership router', () => {
     });
 
     it('blocks update when field invalid', async () => {
-      const updateSpy = jest.spyOn(membershipService, 'editMemberships');
+      const updateSpy = jest.spyOn(herdService, 'editHerds');
 
-      const attempts = Object.keys(membershipDataA).concat('otherkey').map(async (key) => {
-        const membershipUpdate = {
-          [key]: typeof membershipDataA[key] === 'number'
-            ? 'some string'
-            : 0,
-        };
-
+      const attempts = Object.keys(herdDataA).concat('otherkey').map(async (key) => {
+        
+        const herdUpdate = {
+          id: validId,
+        }; 
+        if (key === 'breedingDate' || key === 'calvingDate') {
+          herdUpdate[key] = 'not a date';
+        } else if (typeof herdDataB[key] === 'number') {
+          herdUpdate[key] = 'some string';
+        } else {
+          herdUpdate[key] = 0;
+        }
+        
         const res = await request
           .patch(`/${validId}`)
           .set('Authorization', 'Bearer dummy_token')
-          .send(membershipUpdate);
+          .send(herdUpdate);
+        // console.log(res);
 
         expect(res.status).toBe(400);
         expect(res.body.errors.length).toBe(1);
@@ -186,38 +205,42 @@ describe('Working membership router', () => {
       await Promise.all(attempts);
     });
 
-    it('updates membership when body is valid', async () => {
-      const updateSpy = jest.spyOn(membershipService, 'editMemberships');
+    it('updates herd when body is valid', async () => {
+      const updateSpy = jest.spyOn(herdService, 'editHerds');
 
-      const attempts = Object.keys(membershipDataB).map(async (key) => {
-        const membershipUpdate = { [key]: membershipDataB[key] };
+      const attempts = Object.keys(herdDataB).map(async (key) => {
+        const herdUpdate = { [key]: herdDataB[key] };
 
         const res = await request
           .patch(`/${validId}`)
           .set('Authorization', 'Bearer dummy_token')
-          .send(membershipUpdate);
+          .send(herdUpdate);
 
         expect(res.status).toBe(200);
-        expect(res.body[key]).toBe(membershipDataB[key]);
+        if (key === 'breedingDate' || key === 'calvingDate') {
+          expect(new Date(res.body[key])).toEqual(herdDataB[key]);
+        } else expect(res.body[key]).toBe(herdDataB[key]);
       });
       await Promise.all(attempts);
 
-      expect(updateSpy).toHaveBeenCalledTimes(Object.keys(membershipDataB).length);
+      expect(updateSpy).toHaveBeenCalledTimes(Object.keys(herdDataB).length);
       updateSpy.mockClear();
 
       const res = await request
         .get(`/${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
-      Object.keys(membershipDataB).forEach((key) => {
-        expect(res.body[key]).toBe(membershipDataB[key]);
+      Object.keys(herdDataB).forEach((key) => {
+        if (key === 'breedingDate' || key === 'calvingDate') {
+          expect(new Date(res.body[key])).toEqual(herdDataB[key]);
+        } else expect(res.body[key]).toBe(herdDataB[key]);
       });
     });
   });
 
   describe('DELETE /:id', () => {
     it('requires valid permissions', async () => {
-      const deleteSpy = jest.spyOn(membershipService, 'deleteMemberships');
+      const deleteSpy = jest.spyOn(herdService, 'deleteHerds');
 
       const res = await request.delete(`/${validId}`);
 
@@ -225,8 +248,8 @@ describe('Working membership router', () => {
       expect(deleteSpy).not.toHaveBeenCalled();
     });
 
-    it('returns 404 if membership not found', async () => {
-      const deleteSpy = jest.spyOn(membershipService, 'deleteMemberships');
+    it('returns 404 if herd not found', async () => {
+      const deleteSpy = jest.spyOn(herdService, 'deleteHerds');
 
       const res = await request
         .delete(`/${invalidId}`)
@@ -237,8 +260,8 @@ describe('Working membership router', () => {
       deleteSpy.mockClear();
     });
 
-    it('deletes membership', async () => {
-      const deleteSpy = jest.spyOn(membershipService, 'deleteMemberships');
+    it('deletes herd', async () => {
+      const deleteSpy = jest.spyOn(herdService, 'deleteHerds');
 
       const res = await request
         .delete(`/${validId}`)

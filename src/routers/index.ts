@@ -3,6 +3,7 @@ import userRouter from './user_router';
 import resourceRouter from './resource_router';
 import teamRouter from './team_router';
 import membershipRouter from './membership_router';
+import herdRouter from './herd_router';
 
 export {
   authRouter, 
@@ -10,4 +11,5 @@ export {
   resourceRouter,
   teamRouter,
   membershipRouter,
+  herdRouter,
 };

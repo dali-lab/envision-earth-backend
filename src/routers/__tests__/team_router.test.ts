@@ -158,7 +158,7 @@ describe('Working team router', () => {
       updateSpy.mockClear();
     });
 
-    it('blocks creation when field invalid', async () => {
+    it('blocks update when field invalid', async () => {
       const updateSpy = jest.spyOn(teamService, 'editTeams');
 
       const attempts = Object.keys(teamDataA).concat('otherkey').map(async (key) => {

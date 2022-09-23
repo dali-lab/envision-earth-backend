@@ -30,7 +30,7 @@ describe('membershipService', () => {
   });
   
   describe('createMembership', () => {
-    it('Can create team', async () => {
+    it('Can create membership', async () => {
       const membership: IMembership = await membershipService.createMembership(membershipData);
 
       expect(membership.id).toBeDefined();
