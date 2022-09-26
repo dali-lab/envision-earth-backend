@@ -4,6 +4,7 @@ import userController from './user_controller';
 import teamController from './team_controller';
 import membershipController from './membership_controller';
 import herdController from './herd_controller';
+import cowCensusController from './cow_census_controller';
 
 export {
   resourceController, 
@@ -12,4 +13,5 @@ export {
   teamController,
   membershipController,
   herdController,
+  cowCensusController,
 };

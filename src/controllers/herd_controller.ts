@@ -10,7 +10,7 @@ const createHerd: RequestHandler = async (req: ValidatedRequest<CreateHerdReques
   try {
     const {
       teamId,
-      species,
+      breed,
       count,
       breedingDate,
       calvingDate,
@@ -18,7 +18,7 @@ const createHerd: RequestHandler = async (req: ValidatedRequest<CreateHerdReques
 
     const newHerd = await herdService.createHerd({ 
       teamId,
-      species,
+      breed,
       count,
       breedingDate,
       calvingDate,
@@ -44,14 +44,14 @@ const updateHerd: RequestHandler = async (req: ValidatedRequest<UpdateHerdReques
   try {
     const {
       teamId,
-      species,
+      breed,
       count,
       breedingDate,
       calvingDate,
     } = req.body;
 
     const updatedHerds = await herdService.editHerds(
-      { teamId, species, count, breedingDate, calvingDate },
+      { teamId, breed, count, breedingDate, calvingDate },
       { id: req.params.id },
     );
 

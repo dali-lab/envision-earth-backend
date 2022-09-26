@@ -4,6 +4,7 @@ import VerificationCode from './verification_code';
 import Team  from './team';
 import Membership from './membership';
 import Herd from './herd';
+import CowCensus from './cow_census';
 
 export {
   User,
@@ -12,4 +13,5 @@ export {
   Team,
   Membership,
   Herd,
+  CowCensus,
 };

@@ -1,48 +1,39 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('herds', {
+    await queryInterface.createTable('cow_census', {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
       },
-      teamId: {
+      herdId: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'teams',
+          model: 'herds',
           key: 'id',
         },
-        unique: true,
       },
-      breed: {
-        type: Sequelize.STRING,
+      photoId: { // TODO: BCS
+        type: Sequelize.UUID,
         allowNull: false,
       },
-      count: {
+      bcs: {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
-      breedingDate: {
-        type: Sequelize.DATE,
+      notes: {
+        type: Sequelize.STRING,
         allowNull: false,
       },
-      calvingDate: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
+      tag: {
+        type: Sequelize.STRING,
         allowNull: false,
       },
     });
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable('herds');
+    await queryInterface.dropTable('cow_census');
   },
 };

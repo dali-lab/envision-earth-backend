@@ -12,6 +12,7 @@ import {
   teamRouter,
   membershipRouter,
   herdRouter,
+  cowCensusRouter,
 } from './routers';
 import db from './db/db';
 
@@ -45,6 +46,7 @@ app.use('/resources', resourceRouter); // NOTE: Partially secured to users
 app.use('/teams', teamRouter);
 app.use('/memberships', membershipRouter);
 app.use('/herds', herdRouter);
+app.use('/cow_censuses', cowCensusRouter);
 app.use((req, res) => { // Custom 404 middleware
   res.status(404).json({ message: 'The route you\'ve requested doesn\'t exist' });
 });

@@ -12,7 +12,7 @@ const invalidHerdId = '4bcc52d8-7147-477b-9304-06e0da2783ae';
 
 const herdData: Omit<IHerd, 'id'> = {
   teamId: idTeam,
-  species: 'Holstein Friesian',
+  breed: 'Holstein Friesian',
   count: 10,
   breedingDate: new Date('2022-09-21'),
   calvingDate: new Date('2023-04-21 21:50:56.305-04'),
@@ -60,11 +60,11 @@ describe('herdService', () => {
 
   describe('editHerds', () => {
     it('Updates herd field', async () => {
-      const updatedHerd1: IHerd = await herdService.editHerds({ count: 11, species: 'Aberdeen Angus' }, { id: idHerd }).then((res: IHerd[]) => res[0]);
+      const updatedHerd1: IHerd = await herdService.editHerds({ count: 11, breed: 'Aberdeen Angus' }, { id: idHerd }).then((res: IHerd[]) => res[0]);
       expect(updatedHerd1.id).toBe(idHerd);
       expect(updatedHerd1.teamId).toBe(herdData.teamId);
       expect(updatedHerd1.count).toBe(11);
-      expect(updatedHerd1.species).toBe('Aberdeen Angus');
+      expect(updatedHerd1.breed).toBe('Aberdeen Angus');
       expect(updatedHerd1.breedingDate).toEqual(herdData.breedingDate);
       expect(updatedHerd1.calvingDate).toEqual(herdData.calvingDate);
 
@@ -72,13 +72,13 @@ describe('herdService', () => {
       expect(updatedHerd2.id).toBe(idHerd);
       expect(updatedHerd2.teamId).toBe(herdData.teamId);
       expect(updatedHerd2.count).toBe(11);
-      expect(updatedHerd2.species).toBe('Aberdeen Angus');
+      expect(updatedHerd2.breed).toBe('Aberdeen Angus');
       expect(updatedHerd2.breedingDate).toEqual(herdData.breedingDate);
       expect(updatedHerd2.calvingDate).toEqual(herdData.calvingDate);
     });
 
     it('Returns empty array if no herds to edit', async () => {
-      expect(await herdService.editHerds({ count: 11, species: 'Aberdeen Angus' }, { id: invalidHerdId })).toStrictEqual([]);
+      expect(await herdService.editHerds({ count: 11, breed: 'Aberdeen Angus' }, { id: invalidHerdId })).toStrictEqual([]);
     });
   });
 

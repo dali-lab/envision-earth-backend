@@ -9,7 +9,7 @@ export interface HerdParams {
   id?: string;
 
   teamId?: string;
-  species?: string;
+  breed?: string;
   count?: number,
   breedingDate?: Date,
   calvingDate?: Date,
@@ -19,7 +19,7 @@ export interface HerdParams {
 }
 
 const constructQuery = (params: HerdParams) => {
-  const { id, teamId, species, count, breedingDate, calvingDate, offset, limit } = params;
+  const { id, teamId, breed, count, breedingDate, calvingDate, offset, limit } = params;
   const query: DatabaseQuery<HerdParams> = {
     where: {},
   };
@@ -33,9 +33,9 @@ const constructQuery = (params: HerdParams) => {
       [Op.eq]: teamId,
     };
   }
-  if (species) {
-    query.where.species = {
-      [Op.eq]: species,
+  if (breed) {
+    query.where.breed = {
+      [Op.eq]: breed,
     };
   }
   if (count) {

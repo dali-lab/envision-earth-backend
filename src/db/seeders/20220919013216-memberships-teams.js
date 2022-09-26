@@ -5,7 +5,7 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
     try {
       /**
-       * User Data
+       * Team Data
        */
       const teams = [
         {
@@ -24,7 +24,7 @@ module.exports = {
       );
   
       /**
-       * Resource Data
+       * Membership Data
        */
       const memberships = [
         {

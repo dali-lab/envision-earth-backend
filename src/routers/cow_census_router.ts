@@ -6,10 +6,10 @@ import requireSelf from 'auth/requireSelf';
 import requireMembership from 'auth/requireMembership';
 import { UserScopes } from 'db/models/user'; 
 import { TeamScopes } from 'db/models/team';
-import { herdController } from 'controllers';
+import { cowCensusController } from 'controllers';
 import { errorHandler } from 'errors';
 import { validationErrorHandler } from 'validation';
-import { CreateHerdSchema, UpdateHerdSchema } from 'validation/herds';
+import { CreateCowCensusSchema, UpdateCowCensusSchema } from 'validation/cow_census';
 
 const router = express();
 const validator = createValidator({ passError: true });
@@ -25,8 +25,8 @@ router.route('/')
   .post(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
-    validator.body(CreateHerdSchema),
-    herdController.createHerd,
+    validator.body(CreateCowCensusSchema),
+    cowCensusController.createCowCensus,
   );
 
 router.route('/:id')
@@ -34,18 +34,18 @@ router.route('/:id')
     requireScope(UserScopes.User),
     requireSelf(UserScopes.Admin),
     requireMembership(TeamScopes.User),
-    herdController.getHerd,
+    cowCensusController.getCowCensus,
   )
   .patch(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
-    validator.body(UpdateHerdSchema),
-    herdController.updateHerd,
+    validator.body(UpdateCowCensusSchema),
+    cowCensusController.updateCowCensus,
   )
   .delete(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
-    herdController.deleteHerd,
+    cowCensusController.deleteCowCensus,
   );
 
 if (process.env.NODE_ENV === 'test') {

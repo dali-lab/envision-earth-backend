@@ -7,49 +7,47 @@ import {
   ForeignKey,
   Default,
   AllowNull,
-  Unique,
 } from 'sequelize-typescript';
-import Team from './team';
+import Herd from './herd';
 
-export interface IHerd {
+export interface ICowCensus {
   id: string;
-  teamId: string;
-  breed: string;
-  count: number,
-  breedingDate: Date,
-  calvingDate: Date,
+  herdId: string;
+  photoId: string;
+  bcs: number,
+  notes: string;
+  tag: string;
 }
 
 @Table({
-  tableName: 'herds',
+  tableName: 'cow_census',
 })
-class Herd extends Model<IHerd> implements IHerd {
+class CowCensus extends Model<ICowCensus> implements ICowCensus {
   @PrimaryKey
   @Default(DataTypes.UUIDV4)
   @Column({ type: DataTypes.UUID })
     id: string;
 
-  @Unique
-  @ForeignKey(() => Team)
+  @ForeignKey(() => Herd)
   @AllowNull(false)
   @Column(DataTypes.UUID)
-    teamId: string;
+    herdId: string;
 
   @AllowNull(false)
   @Column(DataTypes.STRING)
-    breed: string;
+    photoId: string;
 
   @AllowNull(false)
   @Column(DataTypes.NUMBER)
-    count: number;
+    bcs: number;
   
   @AllowNull(false)
-  @Column(DataTypes.DATE)
-    breedingDate: Date;
+  @Column(DataTypes.NUMBER)
+    notes: string;
 
   @AllowNull(false)
-  @Column(DataTypes.DATE)
-    calvingDate: Date;
+  @Column(DataTypes.NUMBER)
+    tag: string;
 }
 
-export default Herd;
+export default CowCensus;

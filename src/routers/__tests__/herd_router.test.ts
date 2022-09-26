@@ -10,7 +10,7 @@ const idTeam = '6aab56d3-ac8c-4f3b-a59b-c03e51c76e5d'; // from seeder
 
 const herdDataA: Omit<IHerd, 'id'> = {
   teamId: idTeam,
-  species: 'Holstein Friesian',
+  breed: 'Holstein Friesian',
   count: 10,
   breedingDate: new Date('2022-04-21 21:50:56.305-04'),
   calvingDate: new Date('2022-08-21 21:50:56.305-04'),
@@ -18,7 +18,7 @@ const herdDataA: Omit<IHerd, 'id'> = {
 
 const herdDataB: Omit<IHerd, 'id'> = {
   teamId: idTeam,
-  species: 'Swiss Fleckvieh',
+  breed: 'Swiss Fleckvieh',
   count: 12,
   breedingDate: new Date('2022-05-21 21:50:56.305-04'),
   calvingDate: new Date('2022-09-21 21:50:56.305-04'),
