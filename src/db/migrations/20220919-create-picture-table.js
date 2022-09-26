@@ -8,33 +8,11 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
-      censusId: {
-        type: Sequelize.UUID,
-        references: {
-          model: 'cow_census',
-          key: 'id',
-        },
-        onUpdate: 'cascade',
-        onDelete: 'cascade',
-      },
-      herdId: {
-        type: Sequelize.UUID,
-        references: {
-          model: 'herds',
-          key: 'id',
-        },
-        onUpdate: 'cascade',
-        onDelete: 'cascade',
-      },
       fullUrl: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      thumbUrl: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-    });
+   });
   },
 
   async down(queryInterface) {
