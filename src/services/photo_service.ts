@@ -26,6 +26,7 @@ export interface PhotoS3Signature {
   url: string
 }
 
+// Get signed URL from S3 (allocating space?)
 const signS3 = async (req: Omit<PhotoParams, 'link'>) => {
   const s3 = new aws.S3({
     signatureVersion: 'v4',
@@ -109,6 +110,7 @@ const getPhotos = async (params: PhotoParams) => {
 
 const editPhotos = async (photo: Partial<IPhoto>, params: PhotoParams) => {
   const query = constructQuery(params);
+  // TODO: AWS editing function
   return (await PhotoModel.update(photo, { ...query, returning: true }))[1];
 }
 
