@@ -14,9 +14,9 @@ module.exports = {
           key: 'id',
         },
       },
-      photoId: { // TODO: BCS
+      photoId: {
         type: Sequelize.UUID,
-        allowNull: false,
+        allowNull: true,
       },
       bcs: {
         type: Sequelize.FLOAT,
@@ -28,6 +28,14 @@ module.exports = {
       },
       tag: {
         type: Sequelize.STRING,
+        allowNull: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
         allowNull: false,
       },
     });

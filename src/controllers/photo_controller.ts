@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { RequestHandler } from 'express';
 import { ValidatedRequest } from 'express-joi-validation';
-import Photo, { IPhoto } from 'db/models/photo';
+// import Photo, { IPhoto } from 'db/models/photo';
 import { CreatePhotoRequest, UpdatePhotoRequest } from 'validation/photo';
-import photoService from 'services/photo_service';
+// import photoService from 'services/photo_service';
 
 // Use the functions from the service to create photos and such
 // More relating to the web service and the server than the database

@@ -12,6 +12,10 @@ module.exports = {
           id: '6aab56d3-ac8c-4f3b-a59b-c03e51c76e5d',
           name: 'Test Team',
         },
+        {
+          id: 'ab9e8aee-0f7b-4ac8-9fd5-5bb982c0367d',
+          name: 'Default Team',
+        },
       ];
       await queryInterface.bulkInsert(
         'teams',
@@ -31,6 +35,12 @@ module.exports = {
           id: 'd97f0c9a-4cb0-47ce-bd49-73b248b81d13',
           teamId: '6aab56d3-ac8c-4f3b-a59b-c03e51c76e5d',
           userId: '62da2543-bf07-4b1a-9d45-a531493d37d9',
+          role: 'OWNER',
+        },
+        {
+          id: '908643c2-cab1-4189-9cab-cc54654d2629',
+          teamId: 'ab9e8aee-0f7b-4ac8-9fd5-5bb982c0367d',
+          userId: '68b0d858-9e75-49b0-902e-2b587bd9a996',
           role: 'OWNER',
         },
       ];
