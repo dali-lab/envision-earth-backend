@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const idTeam = '6aab56d3-ac8c-4f3b-a59b-c03e51c76e5d'; // from seeder
-const idUser = '68b0d858-9e75-49b0-902e-2b587bd9a996'; // from seeder
+const idUser = 'a05742a3-0b8c-4fc4-98a3-640e55d8f2ab'; // from seeder
 
 let idMembership = '';
 const invalidMembershipId = 'a2856caa-0384-47e3-a292-f2f8ca90b8d7';
@@ -30,7 +30,7 @@ describe('membershipService', () => {
   });
   
   describe('createMembership', () => {
-    it('Can create team', async () => {
+    it('Can create membership', async () => {
       const membership: IMembership = await membershipService.createMembership(membershipData);
 
       expect(membership.id).toBeDefined();

@@ -16,11 +16,11 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint ./src",
-    "test": "yarn lint && NODE_ENV=test jest --runInBand --detectOpenHandles --coverage",
+    "test": "npm run lint && NODE_ENV=test jest --runInBand --coverage",
     "dev": "nodemon -r tsconfig-paths/register src/server.ts --exec ts-node",
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
-    "build": "tsc",
-    "prod": "yarn build; node dist/server.js"
+    "build": "npm install && tsc",
+    "prod": "npm run build && node lib/server.js"
   },
   "dependencies": {
     "aws-sdk": "^2.1216.0",
