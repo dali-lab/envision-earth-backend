@@ -19,7 +19,7 @@ export interface PhotoParams {
   fileType: string,
   link: string,
   // you will need to add other params to this
-};
+}
 
 export interface PhotoS3Signature {
   signedRequest: string,
@@ -97,7 +97,7 @@ const constructQuery = (params: PhotoParams) => {
     };
   }
   return query;
-}
+};
 
 const getPhotos = async (params: PhotoParams) => {
   const query = constructQuery(params);
@@ -106,13 +106,13 @@ const getPhotos = async (params: PhotoParams) => {
   } catch (e: any) {
     throw new BaseError(e.message, 500);
   }
-}
+};
 
 const editPhotos = async (photo: Partial<IPhoto>, params: PhotoParams) => {
   const query = constructQuery(params);
   // TODO: AWS editing function
   return (await PhotoModel.update(photo, { ...query, returning: true }))[1];
-}
+};
 
 const deletePhotos = async (params: PhotoParams) => {
   const query = constructQuery(params);
@@ -124,7 +124,7 @@ const deletePhotos = async (params: PhotoParams) => {
   } catch (e: any) {
     throw new BaseError(e.message, 500);
   }
-}
+};
 
 const createPhoto = async (photo: Omit<PhotoParams, 'link'>) => {
   // Register the photo in the AWS S3 database
@@ -138,7 +138,7 @@ const createPhoto = async (photo: Omit<PhotoParams, 'link'>) => {
   } catch (e: any) {
     throw new BaseError(e.message, 500);
   }
-}
+};
 
 const photoService = {
   signS3,

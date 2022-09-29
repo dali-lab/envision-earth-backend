@@ -7,7 +7,7 @@ import photoService from 'services/photo_service';
 
 // Use the functions from the service to create photos and such
 // More relating to the web service and the server than the database
-const createNewPhoto: RequestHandler = async (req: ValidatedRequest<CreatePhotoRequest>, res, next) => {
+const createPhoto: RequestHandler = async (req: ValidatedRequest<CreatePhotoRequest>, res, next) => {
   try {
   } catch (error) {
     next(error);
@@ -39,7 +39,7 @@ const deletePhoto: RequestHandler = async (req, res, next) => {
 };
 
 const photoController = {
-  createNewPhoto,
+  createPhoto,
   getPhoto,
   updatePhoto,
   deletePhoto,

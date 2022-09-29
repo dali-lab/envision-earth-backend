@@ -1,6 +1,6 @@
 import joi from 'joi';
-import { ContainerTypes, ValidatedRequestSchema } from 'express-joi-validation'
-import { IPhoto } from 'db/models/photo'
+import { ContainerTypes, ValidatedRequestSchema } from 'express-joi-validation';
+import { IPhoto } from 'db/models/photo';
 
 export interface CreatePhotoRequest extends ValidatedRequestSchema {
   [ContainerTypes.Body]: IPhoto
