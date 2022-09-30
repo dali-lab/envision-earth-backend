@@ -1,5 +1,6 @@
 import {
   AllowNull,
+  BelongsTo,
   Column,
   Default,
   Model,
@@ -7,21 +8,22 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { DataTypes } from 'sequelize';
+import Membership from './membership'
 
 export interface IMemberVerificationCode {
   id: string;
   /**
-	 * Foreign key pointing to the user who created the code
-	*/
+   * Foreign key pointing to the user who created the code
+  */
   membershipId: string;
   /**
-	 * The verification code generated for sharing
-	*/
+   * The verification code generated for sharing
+  */
   code: string;
 
   /**
-	 * The expiration date of the verification code
-	*/
+   * The expiration date of the verification code
+  */
   expiration: Date;
 }
 
@@ -32,20 +34,21 @@ class MemberVerificationCode extends Model<IMemberVerificationCode> implements I
   @PrimaryKey
   @Default(DataTypes.UUIDV4)
   @Column({ type: DataTypes.UUID })
-	  id: string;
+  id: string;
 
   @AllowNull(false)
   @Default(DataTypes.UUIDV4)
   @Column({ type: DataTypes.UUID })
-	  membershipId: string;
+  @BelongsTo(() => Membership)
+  membershipId: string;
 
   @AllowNull(false)
   @Column(DataTypes.STRING)
-	  code: string;
+  code: string;
 
   @AllowNull(false)
   @Column(DataTypes.DATE)
-	  expiration: Date;
+  expiration: Date;
 }
 
 export default MemberVerificationCode;
