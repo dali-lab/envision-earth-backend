@@ -17,6 +17,12 @@ const teamDataB: Omit<ITeam, 'id'> = {
 let validId = '';
 const invalidId = '4e86ecda-baaf-4ad4-b1a5-04eaaa0c3252';
 
+const idUser = '68b0d858-9e75-49b0-902e-2b587bd9a996'; // from seeder
+const existingTeamData: ITeam = {
+  id: 'ab9e8aee-0f7b-4ac8-9fd5-5bb982c0367d',
+  name: 'Default Team',
+};
+
 // Mocks requireAuth server middleware
 jest.mock('../../auth/requireAuth');
 jest.mock('../../auth/requireScope');
@@ -109,7 +115,7 @@ describe('Working team router', () => {
       const getSpy = jest.spyOn(teamService, 'getTeams');
 
       const res = await request
-        .get(`/${invalidId}`)
+        .get(`/?id=${invalidId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(404);
@@ -121,12 +127,27 @@ describe('Working team router', () => {
       const getSpy = jest.spyOn(teamService, 'getTeams');
 
       const res = await request
-        .get(`/${validId}`)
+        .get(`/?id=${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
       Object.keys(teamDataA).forEach((key) => {
         expect(res.body[key]).toBe(teamDataA[key]);
+      });
+      expect(getSpy).toHaveBeenCalled();
+      getSpy.mockClear();
+    });
+
+    it('returns team by userId', async () => {
+      const getSpy = jest.spyOn(teamService, 'getTeams');
+
+      const res = await request
+        .get(`/?userId=${idUser}`)
+        .set('Authorization', 'Bearer dummy_token');
+
+      expect(res.status).toBe(200);
+      Object.keys(existingTeamData).forEach((key) => {
+        expect(res.body[key]).toBe(existingTeamData[key]);
       });
       expect(getSpy).toHaveBeenCalled();
       getSpy.mockClear();
@@ -200,7 +221,7 @@ describe('Working team router', () => {
       updateSpy.mockClear();
 
       const res = await request
-        .get(`/${validId}`)
+        .get(`/?id=${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       Object.keys(teamDataB).forEach((key) => {

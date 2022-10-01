@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
 import TeamModel, { ITeam } from 'db/models/team';
+import UserModel from 'db/models/user';
 import { Op } from 'sequelize';
 import { DatabaseQuery } from '../constants';
 import { BaseError } from 'errors';
@@ -8,13 +9,14 @@ import { BaseError } from 'errors';
 export interface TeamParams {
   id?: string;
   name?: string;
+  userId?: string;
 
   limit?: number;
   offset?: number
 }
 
 const constructQuery = (params: TeamParams) => {
-  const { id, name, limit, offset } = params;
+  const { id, name, userId, limit, offset } = params;
   const query: DatabaseQuery<TeamParams> = {
     where: {},
   };
@@ -27,6 +29,10 @@ const constructQuery = (params: TeamParams) => {
     query.where.name = {
       [Op.eq]: name,
     };
+  }
+  if (userId) {
+    query.include = [{ model: UserModel, attributes: ['id'] }];
+    query.where['$members->Membership.userId$'] = userId;
   }
   if (limit) {
     query.limit = limit;

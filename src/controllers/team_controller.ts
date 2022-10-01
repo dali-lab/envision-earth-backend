@@ -6,7 +6,7 @@ import { CreateUserRequest, UpdateUserRequest } from 'validation/users';
 import { ITeam } from 'db/models/team';
 import { BaseError } from 'errors';
 
-const createNewTeam: RequestHandler = async (req: ValidatedRequest<CreateUserRequest>, res, next) => {
+const createTeam: RequestHandler = async (req: ValidatedRequest<CreateUserRequest>, res, next) => {
   try {
     const {
       name, 
@@ -22,7 +22,11 @@ const createNewTeam: RequestHandler = async (req: ValidatedRequest<CreateUserReq
 
 const getTeam: RequestHandler = async (req, res, next) => {
   try {
-    const teams : ITeam[] = await teamService.getTeams({ id: req.params.id });
+    const id = req.query?.id as string;
+    const name = req.query?.name as string;
+    const userId = req.query?.userId as string;
+    
+    const teams : ITeam[] = await teamService.getTeams({ id, name, userId });
     if (teams.length === 0) throw new BaseError('Team not found', 404);
     else res.status(200).json(teams[0]);
   } catch (error) {
@@ -61,7 +65,7 @@ const deleteTeam: RequestHandler = async (req, res, next) => {
 };
 
 const membershipController = {
-  createNewTeam,
+  createTeam,
   getTeam,
   updateTeam,
   deleteTeam,
