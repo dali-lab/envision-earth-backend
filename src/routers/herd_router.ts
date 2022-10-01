@@ -27,15 +27,15 @@ router.route('/')
     requireMembership(TeamScopes.User),
     validator.body(CreateHerdSchema),
     herdController.createHerd,
-  );
-
-router.route('/:id')
+  )
   .get(
     requireScope(UserScopes.User),
     requireSelf(UserScopes.Admin),
     requireMembership(TeamScopes.User),
     herdController.getHerd,
-  )
+  );
+  
+router.route('/:id')
   .patch(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),

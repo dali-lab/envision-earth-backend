@@ -7,6 +7,7 @@ import { IHerd } from '../../db/models/herd';
 const request = supertest(herdRouter);
 
 const idTeam = '6aab56d3-ac8c-4f3b-a59b-c03e51c76e5d'; // from seeder
+const idExistingTeam = 'ab9e8aee-0f7b-4ac8-9fd5-5bb982c0367d'; // from seeder
 
 const herdDataA: Omit<IHerd, 'id'> = {
   teamId: idTeam,
@@ -22,6 +23,15 @@ const herdDataB: Omit<IHerd, 'id'> = {
   count: 12,
   breedingDate: new Date('2022-05-21 21:50:56.305-04'),
   calvingDate: new Date('2022-09-21 21:50:56.305-04'),
+};
+
+const existingHerdData: IHerd = {
+  id: '187dc38d-bc3a-4eb4-ac99-74e04de04d48',
+  teamId: idExistingTeam,
+  breed: 'Holstein Friesian',
+  count: 21,
+  breedingDate: new Date('2022-01-21 20:50:56.305-05'),
+  calvingDate: new Date('2022-07-21 21:50:56.305-04'),
 };
 
 let validId = '';
@@ -120,12 +130,12 @@ describe('Working herd router', () => {
     });
   });
 
-  describe('GET /:id', () => {
+  describe('GET /?...=...', () => {
     it('returns 404 when herd not found', async () => {
       const getSpy = jest.spyOn(herdService, 'getHerds');
 
       const res = await request
-        .get(`/${invalidId}`)
+        .get(`/?id=${invalidId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(404);
@@ -137,7 +147,7 @@ describe('Working herd router', () => {
       const getSpy = jest.spyOn(herdService, 'getHerds');
 
       const res = await request
-        .get(`/${validId}`)
+        .get(`/?id=${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
@@ -145,6 +155,23 @@ describe('Working herd router', () => {
         if (key === 'breedingDate' || key === 'calvingDate') {
           expect(new Date(res.body[key])).toEqual(herdDataA[key]);
         } else expect(res.body[key]).toBe(herdDataA[key]);
+      });
+      expect(getSpy).toHaveBeenCalled();
+      getSpy.mockClear();
+    });
+
+    it('returns herd by teamId', async () => {
+      const getSpy = jest.spyOn(herdService, 'getHerds');
+
+      const res = await request
+        .get(`/?teamId=${idExistingTeam}`)
+        .set('Authorization', 'Bearer dummy_token');
+
+      expect(res.status).toBe(200);
+      Object.keys(existingHerdData).forEach((key) => {
+        if (key === 'breedingDate' || key === 'calvingDate') {
+          expect(new Date(res.body[key])).toEqual(existingHerdData[key]);
+        } else expect(res.body[key]).toBe(existingHerdData[key]);
       });
       expect(getSpy).toHaveBeenCalled();
       getSpy.mockClear();
@@ -227,7 +254,7 @@ describe('Working herd router', () => {
       updateSpy.mockClear();
 
       const res = await request
-        .get(`/${validId}`)
+        .get(`/?id=${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       Object.keys(herdDataB).forEach((key) => {
@@ -272,7 +299,7 @@ describe('Working herd router', () => {
       deleteSpy.mockClear();
 
       const getRes = await request
-        .get(`/${validId}`)
+        .get(`/?id=${validId}`)
         .set('Authorization', 'Bearer dummy_token');
       expect(getRes.status).toBe(404);
     });

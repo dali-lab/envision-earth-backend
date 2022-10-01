@@ -110,7 +110,7 @@ describe('Working team router', () => {
     });
   });
 
-  describe('GET /:id', () => {
+  describe('GET /?...', () => {
     it('returns 404 when team not found', async () => {
       const getSpy = jest.spyOn(teamService, 'getTeams');
 
