@@ -2,7 +2,6 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import { createValidator } from 'express-joi-validation';
 import requireScope from 'auth/requireScope';
-import requireSelf from 'auth/requireSelf';
 import requireMembership from 'auth/requireMembership';
 import { UserScopes } from 'db/models/user'; 
 import { TeamScopes } from 'db/models/team';
@@ -27,12 +26,16 @@ router.route('/')
     requireMembership(TeamScopes.User),
     validator.body(CreateCowCensusSchema),
     cowCensusController.createCowCensus,
+  )
+  .get(
+    requireScope(UserScopes.User),
+    requireMembership(TeamScopes.User),
+    cowCensusController.getCowCensuses,
   );
 
 router.route('/:id')
   .get(
     requireScope(UserScopes.User),
-    requireSelf(UserScopes.Admin),
     requireMembership(TeamScopes.User),
     cowCensusController.getCowCensus,
   )

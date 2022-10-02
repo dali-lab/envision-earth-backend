@@ -1,14 +1,14 @@
 import supertest from 'supertest';
-import membershipRouter from 'routers/membership_router';
-import { membershipService } from 'services';
+import membershipRouter from '../../routers/membership_router';
+import { membershipService } from '../../services';
 import db from '../../db/db';
 import { IMembership } from '../../db/models/membership';
-import { TeamScopes } from 'db/models/team';
+import { TeamScopes } from '../../db/models/team';
 
 const request = supertest(membershipRouter);
 
 const idTeam = '6aab56d3-ac8c-4f3b-a59b-c03e51c76e5d'; // from seeder
-const idUser = '68b0d858-9e75-49b0-902e-2b587bd9a996'; // from seeder
+const idUser = 'a05742a3-0b8c-4fc4-98a3-640e55d8f2ab'; // from seeder
 
 const membershipDataA: Omit<IMembership, 'id' | 'role'> = {
   teamId: idTeam,

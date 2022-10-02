@@ -24,7 +24,7 @@ router.route('/')
   .post(
     requireScope(UserScopes.Admin),
     validator.body(CreateUserSchema),
-    userController.createNewUser,
+    userController.createUser,
   );
 
 router.route('/:id')

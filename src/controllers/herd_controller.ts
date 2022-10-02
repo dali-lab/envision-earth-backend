@@ -32,7 +32,11 @@ const createHerd: RequestHandler = async (req: ValidatedRequest<CreateHerdReques
 
 const getHerd: RequestHandler = async (req, res, next) => {
   try {
-    const herds : IHerd[] = await herdService.getHerds({ id: req.params.id });
+    // Can only query on certain fields
+    const id = req.query?.id as string;
+    const teamId = req.query?.teamId as string;
+    
+    const herds : IHerd[] = await herdService.getHerds({ id, teamId });
     if (herds.length === 0) throw new BaseError('Herd not found', 404);
     else res.status(200).json(herds[0]);
   } catch (error) {

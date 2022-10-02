@@ -6,7 +6,10 @@ import {
   PrimaryKey,
   Default,
   AllowNull,
+  BelongsToMany,
 } from 'sequelize-typescript';
+import UserModel, { IUser } from 'db/models/user';
+import Membership from 'db/models/membership';
 
 export enum TeamScopes {
   User = 'USER',
@@ -31,6 +34,9 @@ class Team extends Model<ITeam> implements ITeam {
   @AllowNull(false)
   @Column(DataTypes.STRING)
     name: string;
+
+  @BelongsToMany(() => UserModel, () => Membership)
+    members: IUser[];
 }
 
 export default Team;

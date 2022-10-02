@@ -2,7 +2,6 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import { createValidator } from 'express-joi-validation';
 import requireScope from 'auth/requireScope';
-import requireSelf from 'auth/requireSelf';
 import requireMembership from 'auth/requireMembership';
 import { UserScopes } from 'db/models/user'; 
 import { TeamScopes } from 'db/models/team';
@@ -27,15 +26,14 @@ router.route('/')
     requireMembership(TeamScopes.User),
     validator.body(CreateHerdSchema),
     herdController.createHerd,
-  );
-
-router.route('/:id')
+  )
   .get(
     requireScope(UserScopes.User),
-    requireSelf(UserScopes.Admin),
     requireMembership(TeamScopes.User),
     herdController.getHerd,
-  )
+  );
+  
+router.route('/:id')
   .patch(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
