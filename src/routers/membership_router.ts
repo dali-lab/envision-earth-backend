@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === 'test') {
 router.route('/')
   .post(
     requireScope(UserScopes.User),
-    requireMembership(TeamScopes.Owner),
+    requireMembership(TeamScopes.User),
     validator.body(CreateMembershipSchema),
     membershipController.createMembership,
   );
