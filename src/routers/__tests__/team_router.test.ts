@@ -1,6 +1,6 @@
 import supertest from 'supertest';
-import teamRouter from 'routers/team_router';
-import { teamService } from 'services';
+import teamRouter from '../../routers/team_router';
+import { teamService } from '../../services';
 import db from '../../db/db';
 import { ITeam } from '../../db/models/team';
 

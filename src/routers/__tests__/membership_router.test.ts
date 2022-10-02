@@ -1,9 +1,9 @@
 import supertest from 'supertest';
-import membershipRouter from 'routers/membership_router';
-import { membershipService } from 'services';
+import membershipRouter from '../../routers/membership_router';
+import { membershipService } from '../../services';
 import db from '../../db/db';
 import { IMembership } from '../../db/models/membership';
-import { TeamScopes } from 'db/models/team';
+import { TeamScopes } from '../../db/models/team';
 
 const request = supertest(membershipRouter);
 
@@ -99,6 +99,7 @@ describe('Working membership router', () => {
         .set('Authorization', 'Bearer dummy_token')
         .send(membershipDataA);
 
+      console.log(res);
       expect(res.status).toBe(201);
       Object.keys(membershipDataA).forEach((key) => {
         expect(res.body[key]).toBe(membershipDataA[key]);

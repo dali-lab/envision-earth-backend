@@ -1,6 +1,6 @@
 import supertest from 'supertest';
-import herdRouter from 'routers/herd_router';
-import { herdService } from 'services';
+import herdRouter from '../../routers/herd_router';
+import { herdService } from '../../services';
 import db from '../../db/db';
 import { IHerd } from '../../db/models/herd';
 
