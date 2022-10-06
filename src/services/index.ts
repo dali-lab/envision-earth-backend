@@ -11,4 +11,5 @@ export {
   verificationCodeService,
   teamService,
   membershipService,
+  photoService,
 };

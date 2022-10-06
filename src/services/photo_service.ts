@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { DatabaseQuery } from '../constants';
 import { Op } from 'sequelize';
 import { BaseError } from 'errors';
+import axios from 'axios';
 
 dotenv.config();
 
@@ -19,6 +20,15 @@ export interface PhotoParams {
   fileType: string,
   link: string,
   // you will need to add other params to this
+}
+
+export interface CreatePhotoRequestSchema {
+  file: File,
+}
+
+export interface UpdatePhotoRequestSchema {
+  link: string,
+  file: File,
 }
 
 export interface PhotoS3Signature {
@@ -126,14 +136,24 @@ const deletePhotos = async (params: PhotoParams) => {
   }
 };
 
-const createPhoto = async (photo: Omit<PhotoParams, 'link'>) => {
+const createPhoto = async (photo: Omit<PhotoParams, 'link'>, file: File) => {
   // Register the photo in the AWS S3 database
-  const { url } = await signS3(photo);
+  const photoSignature = await signS3(photo);
+
+  // Upload the photo to the AWS database
+  axios.put(photoSignature.url, file,
+    {
+      headers: {
+        'content-type': file.type,
+        'x-amz-acl': 'public-read',
+      },
+    },
+  );
   // Connect the S3 url to the Postgres database
   try {
     return await PhotoModel.create({
       id: uuidv4(),
-      fullUrl: url,
+      fullUrl: photoSignature.url,
     });
   } catch (e: any) {
     throw new BaseError(e.message, 500);
