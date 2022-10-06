@@ -9,6 +9,12 @@ let idTeamA = '';
 let idTeamB = '';
 const invalidTeamId = '6bff1aab-73ca-4c03-b0bd-5b59f19e31f5';
 
+const idUser = '68b0d858-9e75-49b0-902e-2b587bd9a996'; // from seeder
+const existingTeamData: ITeam = {
+  id: 'ab9e8aee-0f7b-4ac8-9fd5-5bb982c0367d',
+  name: 'Default Team',
+};
+
 const teamDataA: Omit<ITeam, 'id'> = {
   name: 'Team A',
 };
@@ -55,6 +61,13 @@ describe('teamService', () => {
 
     it('Returns empty array if no teams to get', async () => {
       expect(await teamService.getTeams({ id: invalidTeamId })).toStrictEqual([]);
+    });
+
+    it('Can get team by userId', async () => {
+      const team: ITeam = await teamService.getTeams({ userId: idUser }).then((res: ITeam[]) => res[0]);
+
+      expect(team.id).toBe(existingTeamData.id);
+      expect(team.name).toBe(existingTeamData.name);
     });
   });
 

@@ -2,14 +2,13 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import { createValidator } from 'express-joi-validation';
 import requireScope from 'auth/requireScope';
-import requireSelf from 'auth/requireSelf';
 import requireMembership from 'auth/requireMembership';
 import { UserScopes } from 'db/models/user'; 
 import { TeamScopes } from 'db/models/team';
-import { membershipController } from 'controllers';
+import { herdController } from 'controllers';
 import { errorHandler } from 'errors';
 import { validationErrorHandler } from 'validation';
-import { CreateMembershipSchema, UpdateMembershipSchema } from 'validation/memberships';
+import { CreateHerdSchema, UpdateHerdSchema } from 'validation/herds';
 
 const router = express();
 const validator = createValidator({ passError: true });
@@ -25,27 +24,26 @@ router.route('/')
   .post(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
-    validator.body(CreateMembershipSchema),
-    membershipController.createMembership,
-  );
-
-router.route('/:id')
+    validator.body(CreateHerdSchema),
+    herdController.createHerd,
+  )
   .get(
     requireScope(UserScopes.User),
-    requireSelf(UserScopes.Admin),
     requireMembership(TeamScopes.User),
-    membershipController.getMembership,
-  )
+    herdController.getHerd,
+  );
+  
+router.route('/:id')
   .patch(
     requireScope(UserScopes.User),
-    requireMembership(TeamScopes.Owner),
-    validator.body(UpdateMembershipSchema),
-    membershipController.updateMembership,
+    requireMembership(TeamScopes.User),
+    validator.body(UpdateHerdSchema),
+    herdController.updateHerd,
   )
   .delete(
     requireScope(UserScopes.User),
-    requireMembership(TeamScopes.Owner),
-    membershipController.deleteMembership,
+    requireMembership(TeamScopes.User),
+    herdController.deleteHerd,
   );
 
 if (process.env.NODE_ENV === 'test') {

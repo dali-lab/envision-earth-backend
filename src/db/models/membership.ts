@@ -7,6 +7,7 @@ import {
   PrimaryKey,
   Default,
   AllowNull,
+  Unique,
 } from 'sequelize-typescript';
 import { TeamScopes } from './team';
 import Team from './team';
@@ -28,6 +29,7 @@ class Membership extends Model<IMembership> implements IMembership {
   @Column(DataTypes.UUID)
     id: string;
 
+  @Unique
   @ForeignKey(() => Team)
   @AllowNull(false)
   @Column(DataTypes.UUID)

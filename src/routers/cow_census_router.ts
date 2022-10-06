@@ -2,14 +2,13 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import { createValidator } from 'express-joi-validation';
 import requireScope from 'auth/requireScope';
-import requireSelf from 'auth/requireSelf';
 import requireMembership from 'auth/requireMembership';
 import { UserScopes } from 'db/models/user'; 
 import { TeamScopes } from 'db/models/team';
-import { membershipController } from 'controllers';
+import { cowCensusController } from 'controllers';
 import { errorHandler } from 'errors';
 import { validationErrorHandler } from 'validation';
-import { CreateMembershipSchema, UpdateMembershipSchema } from 'validation/memberships';
+import { CreateCowCensusSchema, UpdateCowCensusSchema } from 'validation/cow_census';
 
 const router = express();
 const validator = createValidator({ passError: true });
@@ -25,27 +24,31 @@ router.route('/')
   .post(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
-    validator.body(CreateMembershipSchema),
-    membershipController.createMembership,
+    validator.body(CreateCowCensusSchema),
+    cowCensusController.createCowCensus,
+  )
+  .get(
+    requireScope(UserScopes.User),
+    requireMembership(TeamScopes.User),
+    cowCensusController.getCowCensuses,
   );
 
 router.route('/:id')
   .get(
     requireScope(UserScopes.User),
-    requireSelf(UserScopes.Admin),
     requireMembership(TeamScopes.User),
-    membershipController.getMembership,
+    cowCensusController.getCowCensus,
   )
   .patch(
     requireScope(UserScopes.User),
-    requireMembership(TeamScopes.Owner),
-    validator.body(UpdateMembershipSchema),
-    membershipController.updateMembership,
+    requireMembership(TeamScopes.User),
+    validator.body(UpdateCowCensusSchema),
+    cowCensusController.updateCowCensus,
   )
   .delete(
     requireScope(UserScopes.User),
-    requireMembership(TeamScopes.Owner),
-    membershipController.deleteMembership,
+    requireMembership(TeamScopes.User),
+    cowCensusController.deleteCowCensus,
   );
 
 if (process.env.NODE_ENV === 'test') {

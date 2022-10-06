@@ -24,15 +24,15 @@ router.route('/')
   .post(
     requireScope(UserScopes.User),
     validator.body(CreateTeamSchema),
-    teamController.createNewTeam,
-  );
-
-router.route('/:id')
+    teamController.createTeam,
+  )
   .get(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
     teamController.getTeam,
-  )
+  );
+
+router.route('/:id')
   .patch(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),

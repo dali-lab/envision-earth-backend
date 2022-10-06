@@ -172,7 +172,7 @@ describe('Working resource router', () => {
       updateSpy.mockClear();
     });
 
-    it('blocks creation when field invalid', async () => {
+    it('blocks update when field invalid', async () => {
       const updateSpy = jest.spyOn(resourceService, 'editResources');
 
       const attempts = Object.keys(resourceDataA).concat('otherkey').map(async (key) => {

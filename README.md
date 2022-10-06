@@ -36,6 +36,7 @@ Backend for the [Grazing Earth mobile app](https://github.com/dali-lab/grazing-e
 
 1. clone repo and `npm install`
 2. Install PostgreSQL + management tool
+  - Make sure to do `npm install --save-dev sequelize-cli` if you don't have the sequelize cli yet.
   - Windows
     - Install [Windows Subsystem for Linux (WSL)](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-10#1-overview)
     - Follow directions [here](https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-database#install-postgresql) to install PostgreSQL on WSL

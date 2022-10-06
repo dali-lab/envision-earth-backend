@@ -1,5 +1,6 @@
-import aws from 'aws-sdk';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
+import aws from 'aws-sdk';
 import PhotoModel, { IPhoto } from 'db/models/photo';
 import dotenv from 'dotenv';
 import { DatabaseQuery } from '../constants';
@@ -138,17 +139,7 @@ const deletePhotos = async (params: PhotoParams) => {
 
 const createPhoto = async (photo: Omit<PhotoParams, 'link'>, file: File) => {
   // Register the photo in the AWS S3 database
-  const photoSignature = await signS3(photo);
-
-  // Upload the photo to the AWS database
-  axios.put(photoSignature.url, file,
-    {
-      headers: {
-        'content-type': file.type,
-        'x-amz-acl': 'public-read',
-      },
-    },
-  );
+  const { url } = await signS3(photo);
   // Connect the S3 url to the Postgres database
   try {
     return await PhotoModel.create({

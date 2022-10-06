@@ -7,7 +7,7 @@ import { CreateUserRequest, UpdateUserRequest } from 'validation/users';
 import { IUser } from 'db/models/user';
 import { BaseError } from 'errors';
 
-const createNewUser: RequestHandler = async (req: ValidatedRequest<CreateUserRequest>, res, next) => {
+const createUser: RequestHandler = async (req: ValidatedRequest<CreateUserRequest>, res, next) => {
   try {
     const {
       email,
@@ -64,7 +64,7 @@ const deleteUser: RequestHandler = async (req, res, next) => {
 };
 
 const userController = {
-  createNewUser,
+  createUser,
   getUser,
   updateUser,
   deleteUser,
