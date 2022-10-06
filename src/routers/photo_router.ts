@@ -10,18 +10,24 @@ import { photoController } from 'controllers';
 import { errorHandler } from 'errors';
 import { validationErrorHandler } from 'validation';
 import { CreatePhotoSchema, UpdatePhotoSchema } from 'validation/photo'; const router = express();
-const validator = createValidator({ passError: true });// TODO: Move middleware attachment to test file
+const validator = createValidator({ passError: true });
+
+// TODO: Move middleware attachment to test file
 if (process.env.NODE_ENV === 'test') {
   // enable json message body for posting data to router
   router.use(bodyParser.urlencoded({ extended: true }));
   router.use(bodyParser.json());
-} router.route('/')
+}
+
+router.route('/')
   .post(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
     validator.body(CreatePhotoSchema),
     photoController.createPhoto,
-  ); router.route('/:id')
+  );
+
+router.route('/:id')
   .get(
     requireScope(UserScopes.User),
     requireSelf(UserScopes.Admin),
@@ -38,7 +44,9 @@ if (process.env.NODE_ENV === 'test') {
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
     photoController.deletePhoto,
-  ); if (process.env.NODE_ENV === 'test') {
+  );
+
+if (process.env.NODE_ENV === 'test') {
   router.use(validationErrorHandler);
   router.use(errorHandler);
 } export default router;
