@@ -10,6 +10,12 @@ import axios from 'axios';
 
 dotenv.config();
 
+export interface IPhotoInput {
+  uri: string,
+  fileName: string,
+  buffer: string, // base64
+}
+
 export interface PhotoParams {
   fileName: string,
   fileType: string,
@@ -30,7 +36,7 @@ export interface PhotoS3Signature {
   url: string
 }
 
-const signS3 = async (req: Omit<PhotoParams, 'link'>) => {
+const signS3 = async (file: IPhotoInput, fileName: string) => {
   const s3 = new aws.S3({
     signatureVersion: 'v4',
     region: 'us-east-1',
@@ -39,9 +45,10 @@ const signS3 = async (req: Omit<PhotoParams, 'link'>) => {
   });
   const s3Params = {
     Bucket: process.env.S3_BUCKET_NAME,
-    Key: req.fileName,
+    Key: fileName,
     Expires: 60,
-    ContentType: req.fileType,
+    // ContentEncoding: 'base64',
+    ContentType: 'image/jpeg',
     ACL: 'public-read',
   };
   return new Promise<PhotoS3Signature>((resolve, reject) => {
@@ -50,7 +57,7 @@ const signS3 = async (req: Omit<PhotoParams, 'link'>) => {
 
       const returnData: PhotoS3Signature = {
         signedRequest: data,
-        url: `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${req.fileName}`,
+        url: `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${fileName}`,
       };
       resolve(returnData);
     });
@@ -129,11 +136,12 @@ const deletePhotos = async (params: PhotoParams) => {
   }
 };
 
-const createPhoto = async (photo: Omit<PhotoParams, 'link'>, file: File) => {
+const createPhoto = async (file: IPhotoInput, fileName: string) => {
   // Register the photo in the AWS S3 database
   try {
-    const signatureS3: PhotoS3Signature = await signS3(photo);
-    await axios.put(signatureS3.signedRequest, file, { headers: { 'content-type': file.type, 'x-amz-acl': 'public-read' } });
+    const signatureS3: PhotoS3Signature = await signS3(file, fileName);
+    const base64 = Buffer.from(file.buffer, 'base64');
+    await axios.put(signatureS3.signedRequest, base64, { headers: { 'content-type': 'image/jpeg', 'x-amz-acl': 'public-read' } });
 
     // Connect the S3 url to the Postgres database
     return await PhotoModel.create({

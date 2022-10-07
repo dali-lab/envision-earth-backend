@@ -6,6 +6,7 @@ import Membership from './membership';
 import Herd from './herd';
 import CowCensus from './cow_census';
 import MemberVerificationCode from './membership_verification_code';
+import Photo from './photo';
 
 export {
   User,
@@ -16,4 +17,5 @@ export {
   Herd,
   CowCensus,
   MemberVerificationCode,
+  Photo,
 };

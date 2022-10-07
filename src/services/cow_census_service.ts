@@ -1,9 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
 import CowCensusModel, { ICowCensus } from 'db/models/cow_census';
+import { IPhoto } from 'db/models/photo';
 import { Op } from 'sequelize';
 import { DatabaseQuery } from '../constants';
 import { BaseError } from 'errors';
+import photoService, { IPhotoInput } from './photo_service';
 
 export interface CowCensusParams {
   id?: string;
@@ -89,12 +91,23 @@ export const deleteCowCensuses = async (params: CowCensusParams) => {
   }
 };
 
-export const createCowCensus = async (params: Omit<ICowCensus, 'id'>) => {
+export const createCowCensus = async (params: Omit<ICowCensus, 'id' | 'photoId'>, file?: IPhotoInput) => {
   try {
-    return await CowCensusModel.create({
-      ...params,
-      id: uuidv4(),
-    });
+    if (file) {
+      const id = uuidv4();
+      const photo: IPhoto = await photoService.createPhoto(file, id + '.jpg');
+      return await CowCensusModel.create({
+        ...params,
+        id,
+        photoId: photo.id,
+      });
+    } else {
+      return await CowCensusModel.create({
+        ...params,
+        id: uuidv4(),
+        photoId: null,
+      });
+    }
   } catch (e: any) {
     throw new BaseError(e.message, 500);
   }
