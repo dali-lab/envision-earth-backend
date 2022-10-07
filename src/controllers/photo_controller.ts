@@ -7,6 +7,8 @@ import photoService from 'services/photo_service';
 import { BaseError } from 'errors';
 import { getSuccessfulDeletionMessage } from '../constants';
 
+// TODO: Fix
+
 // Use the functions from the service to create photos and such
 // More relating to the web service and the server than the database
 const createPhoto: RequestHandler = async (req: ValidatedRequest<CreatePhotoRequest>, res, next) => {

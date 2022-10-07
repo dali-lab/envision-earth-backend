@@ -5,6 +5,7 @@ import teamRouter from './team_router';
 import membershipRouter from './membership_router';
 import herdRouter from './herd_router';
 import cowCensusRouter from './cow_census_router';
+import photoRouter from './photo_router';
 
 export {
   authRouter, 
@@ -14,4 +15,5 @@ export {
   membershipRouter,
   herdRouter,
   cowCensusRouter,
+  photoRouter,
 };

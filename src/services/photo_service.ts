@@ -10,17 +10,10 @@ import axios from 'axios';
 
 dotenv.config();
 
-/**
- * The signS3 and deleteS3 functions provided below were pulled 
- * from the old backend repo. They have been slightly edited to fit TypeScript format.
- * Hopefully they will still work as is, but they might not.
- */
-
 export interface PhotoParams {
   fileName: string,
   fileType: string,
   link: string,
-  // you will need to add other params to this
 }
 
 export interface CreatePhotoRequestSchema {
@@ -37,7 +30,6 @@ export interface PhotoS3Signature {
   url: string
 }
 
-// Get signed URL from S3 (allocating space?)
 const signS3 = async (req: Omit<PhotoParams, 'link'>) => {
   const s3 = new aws.S3({
     signatureVersion: 'v4',
@@ -139,12 +131,14 @@ const deletePhotos = async (params: PhotoParams) => {
 
 const createPhoto = async (photo: Omit<PhotoParams, 'link'>, file: File) => {
   // Register the photo in the AWS S3 database
-  const { url } = await signS3(photo);
-  // Connect the S3 url to the Postgres database
   try {
+    const signatureS3: PhotoS3Signature = await signS3(photo);
+    await axios.put(signatureS3.signedRequest, file, { headers: { 'content-type': file.type, 'x-amz-acl': 'public-read' } });
+
+    // Connect the S3 url to the Postgres database
     return await PhotoModel.create({
       id: uuidv4(),
-      fullUrl: photoSignature.url,
+      fullUrl: signatureS3.url,
     });
   } catch (e: any) {
     throw new BaseError(e.message, 500);
