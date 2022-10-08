@@ -10,22 +10,22 @@ const createCowCensus: RequestHandler = async (req: ValidatedRequest<CreateCowCe
   try {
     const {
       herdId,
-      photoId,
       bcs,
       notes,
       tag,
+      photo,
     } = req.body;
 
     const newCowCensus = await cowCensusService.createCowCensus({ 
       herdId,
-      photoId,
       bcs,
       notes,
       tag,
-    });
+    }, photo);
 
     res.status(201).json(newCowCensus);
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };

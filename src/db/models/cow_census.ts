@@ -13,7 +13,7 @@ import Herd from './herd';
 export interface ICowCensus {
   id: string;
   herdId: string;
-  photoId: string;
+  photoId: string | null;
   bcs: number,
   notes: string;
   tag: string;
@@ -33,7 +33,7 @@ class CowCensus extends Model<ICowCensus> implements ICowCensus {
   @Column(DataTypes.UUID)
     herdId: string;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @Column(DataTypes.STRING)
     photoId: string;
 

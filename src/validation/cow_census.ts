@@ -1,17 +1,26 @@
 import joi from 'joi';
 import { ValidatedRequestSchema, ContainerTypes } from 'express-joi-validation';
 import { ICowCensus } from 'db/models/cow_census';
+import { IPhotoInput } from '../services/photo_service';
 
-export const CreateCowCensusSchema = joi.object<Omit<ICowCensus, 'id'>>({
+interface ICreateCowCensusRequest {
+  herdId: string;
+  bcs: number,
+  notes: string;
+  tag: string;
+  photo?: IPhotoInput;
+}
+
+export const CreateCowCensusSchema = joi.object<ICreateCowCensusRequest>({
   herdId: joi.string().required().error(() => 'Create cow census expecting a herdId'),
-  photoId: joi.string().required().error(() => 'Create cow census expecting a photoId'),
   bcs: joi.number().required().error(() => 'Create cow census expecting a bcs'),
   notes: joi.string().required().error(() => 'Create cow census expecting a notes'),
   tag: joi.string().required().error(() => 'Create cow census expecting a tag'),
+  photo: joi.any(), // TODO: specify
 });
 
 export interface CreateCowCensusRequest extends ValidatedRequestSchema {
-  [ContainerTypes.Body]: ICowCensus
+  [ContainerTypes.Body]: ICreateCowCensusRequest
 }
 
 export const UpdateCowCensusSchema = joi.object<ICowCensus>({
