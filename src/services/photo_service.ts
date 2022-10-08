@@ -6,7 +6,8 @@ import dotenv from 'dotenv';
 import { DatabaseQuery } from '../constants';
 import { Op } from 'sequelize';
 import { BaseError } from 'errors';
-import axios from 'axios';
+import { resizeImage, uploadImage } from '../util';
+// import axios from 'axios';
 
 dotenv.config();
 
@@ -139,15 +140,23 @@ const deletePhotos = async (params: PhotoParams) => {
 const createPhoto = async (file: IPhotoInput, fileName: string) => {
   // Register the photo in the AWS S3 database
   try {
+    if (!file?.buffer) {
+      throw new Error('An uploaded image has no buffer!');
+    }
+    const resizedPhoto = await resizeImage(Buffer.from(file.buffer, 'base64'));
+    const fullUrl = await uploadImage(resizedPhoto.full);
+    // const thumbUrl = await uploadImage(resizedPhoto.thumb);
+    // delete file.buffer, file.id;
+    return await PhotoModel.create({
+      id: uuidv4(),
+      fullUrl,
+    });
+    
+    /*
     const signatureS3: PhotoS3Signature = await signS3(file, fileName);
     const base64 = Buffer.from(file.buffer, 'base64');
     await axios.put(signatureS3.signedRequest, base64, { headers: { 'content-type': 'image/jpeg', 'x-amz-acl': 'public-read' } });
-
-    // Connect the S3 url to the Postgres database
-    return await PhotoModel.create({
-      id: uuidv4(),
-      fullUrl: signatureS3.url,
-    });
+    */
   } catch (e: any) {
     throw new BaseError(e.message, 500);
   }
