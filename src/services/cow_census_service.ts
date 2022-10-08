@@ -94,11 +94,10 @@ export const deleteCowCensuses = async (params: CowCensusParams) => {
 export const createCowCensus = async (params: Omit<ICowCensus, 'id' | 'photoId'>, file?: IPhotoInput) => {
   try {
     if (file) {
-      const id = uuidv4();
-      const photo: IPhoto = await photoService.createPhoto(file, id + '.jpg');
+      const photo: IPhoto = await photoService.createPhoto(file);
       return await CowCensusModel.create({
         ...params,
-        id,
+        id: uuidv4(),
         photoId: photo.id,
       });
     } else {

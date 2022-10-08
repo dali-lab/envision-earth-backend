@@ -22,7 +22,6 @@ const createCowCensus: RequestHandler = async (req: ValidatedRequest<CreateCowCe
       notes,
       tag,
     }, photo);
-    console.log('here2');
 
     res.status(201).json(newCowCensus);
   } catch (error) {

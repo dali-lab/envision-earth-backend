@@ -7,7 +7,6 @@ import { DatabaseQuery } from '../constants';
 import { Op } from 'sequelize';
 import { BaseError } from 'errors';
 import { resizeImage, uploadImage } from '../util';
-// import axios from 'axios';
 
 dotenv.config();
 
@@ -37,34 +36,7 @@ export interface PhotoS3Signature {
   url: string
 }
 
-const signS3 = async (file: IPhotoInput, fileName: string) => {
-  const s3 = new aws.S3({
-    signatureVersion: 'v4',
-    region: 'us-east-1',
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  });
-  const s3Params = {
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: fileName,
-    Expires: 60,
-    // ContentEncoding: 'base64',
-    ContentType: 'image/jpeg',
-    ACL: 'public-read',
-  };
-  return new Promise<PhotoS3Signature>((resolve, reject) => {
-    s3.getSignedUrl('putObject', s3Params, (err, data) => {
-      if (err) reject(err);
-
-      const returnData: PhotoS3Signature = {
-        signedRequest: data,
-        url: `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${fileName}`,
-      };
-      resolve(returnData);
-    });
-  });
-};
-
+// TODO: revamp
 const deleteS3 = async (req: Pick<PhotoParams, 'link'>) => {
   const s3 = new aws.S3({
     signatureVersion: 'v4',
@@ -137,7 +109,7 @@ const deletePhotos = async (params: PhotoParams) => {
   }
 };
 
-const createPhoto = async (file: IPhotoInput, fileName: string) => {
+const createPhoto = async (file: IPhotoInput) => {
   // Register the photo in the AWS S3 database
   try {
     if (!file?.buffer) {
@@ -146,24 +118,17 @@ const createPhoto = async (file: IPhotoInput, fileName: string) => {
     const resizedPhoto = await resizeImage(Buffer.from(file.buffer, 'base64'));
     const fullUrl = await uploadImage(resizedPhoto.full);
     // const thumbUrl = await uploadImage(resizedPhoto.thumb);
-    // delete file.buffer, file.id;
+
     return await PhotoModel.create({
       id: uuidv4(),
       fullUrl,
     });
-    
-    /*
-    const signatureS3: PhotoS3Signature = await signS3(file, fileName);
-    const base64 = Buffer.from(file.buffer, 'base64');
-    await axios.put(signatureS3.signedRequest, base64, { headers: { 'content-type': 'image/jpeg', 'x-amz-acl': 'public-read' } });
-    */
   } catch (e: any) {
     throw new BaseError(e.message, 500);
   }
 };
 
 const photoService = {
-  signS3,
   deleteS3,
   getPhotos,
   editPhotos,
