@@ -22,7 +22,7 @@ export const uploadImage = async ({
   key: string;
   buffer: Buffer;
 }) => {
-  if (!s3 || !BUCKET_NAME) throw new Error('Image upload not properly set up.');
+  if (!s3 || !BUCKET_NAME) throw new Error('Service not properly set up: .env or AWS settings');
   const params = {
     Bucket: BUCKET_NAME,
     Key: key,
@@ -33,6 +33,28 @@ export const uploadImage = async ({
     .promise()
     .then((data) => {
       return data.Location;
+    })
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+};
+
+export const deleteImage = async ({
+  key,
+}: {
+  key: string;
+}) => {
+  if (!s3 || !BUCKET_NAME) throw new Error('Service not properly set up: .env or AWS settings');
+  const params = {
+    Bucket: BUCKET_NAME,
+    Key: key,
+  };
+  return s3
+    .deleteObject(params)
+    .promise()
+    .then((data) => {
+      return data;
     })
     .catch((err) => {
       console.error(err);

@@ -1,12 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
-import aws from 'aws-sdk';
 import PhotoModel, { IPhoto } from 'db/models/photo';
 import dotenv from 'dotenv';
 import { DatabaseQuery } from '../constants';
 import { Op } from 'sequelize';
 import { BaseError } from 'errors';
-import { resizeImage, uploadImage } from '../util';
+import { resizeImage, uploadImage, deleteImage } from '../util';
 
 dotenv.config();
 
@@ -35,29 +34,6 @@ export interface PhotoS3Signature {
   signedRequest: string,
   url: string
 }
-
-// TODO: revamp
-const deleteS3 = async (req: Pick<PhotoParams, 'link'>) => {
-  const s3 = new aws.S3({
-    signatureVersion: 'v4',
-    region: 'us-east-1',
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  });
-
-  const key = req.link.replace('https://', '').replace(process.env.S3_BUCKET_NAME as string, '').replace('.s3.amazonaws.com/', '');
-  const s3Params = {
-    Bucket: process.env.S3_BUCKET_NAME as string,
-    Key: key,
-  };
-
-  return new Promise((resolve, reject) => {
-    s3.deleteObject(s3Params, (err, data) => {
-      if (err) reject(err);
-      resolve(data);
-    });
-  });
-};
 
 const constructQuery = (params: PhotoParams) => {
   const { fileName, fileType, link } = params;
@@ -101,7 +77,8 @@ const deletePhotos = async (params: PhotoParams) => {
   const query = constructQuery(params);
   try {
     // Delete the photo from the S3 database
-    deleteS3(params);
+    const key = params.link.replace('https://', '').replace(process.env.S3_BUCKET_NAME as string, '').replace('.s3.amazonaws.com/', '');
+    deleteImage({ key });
     // and remove the link from the Postgres database
     return await PhotoModel.destroy(query);
   } catch (e: any) {
@@ -129,7 +106,6 @@ const createPhoto = async (file: IPhotoInput) => {
 };
 
 const photoService = {
-  deleteS3,
   getPhotos,
   editPhotos,
   deletePhotos,
