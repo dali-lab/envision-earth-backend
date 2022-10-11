@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
 import CowCensusModel, { ICowCensus } from 'db/models/cow_census';
-import { IPhoto } from 'db/models/photo';
+import { IPhoto } from 'db/models/photos';
 import { Op } from 'sequelize';
 import { DatabaseQuery } from '../constants';
 import { BaseError } from 'errors';

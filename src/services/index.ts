@@ -6,6 +6,7 @@ import teamService from './team_service';
 import membershipService from './membership_service';
 import herdService from './herd_service';
 import cowCensusService from './cow_census_service';
+import plotService from './plot_service';
 
 export {
   userService,
@@ -16,4 +17,5 @@ export {
   herdService,
   photoService,
   cowCensusService,
+  plotService,
 };

@@ -10,7 +10,7 @@ module.exports = {
       const photos = [
         {
           id: 'ef57a439-4dad-4010-86cd-b2f9d58183bb',
-          fullUrl: 'https://envision-earth-bucket.s3.amazonaws.com/Cow4-ef3b0743-33e7-4207-97dd-42e79b642fa2.jpg',
+          fullUrl: 'https://envision-earth-bucket.s3.amazonaws.com/1665188889040_full.jpeg',
         },
       ];
       await queryInterface.bulkInsert(

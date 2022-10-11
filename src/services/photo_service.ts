@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
-import PhotoModel, { IPhoto } from 'db/models/photo';
+import PhotoModel, { IPhoto } from 'db/models/photos';
 import dotenv from 'dotenv';
 import { DatabaseQuery } from '../constants';
 import { Op } from 'sequelize';
