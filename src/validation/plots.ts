@@ -1,6 +1,6 @@
 import joi from 'joi';
 import { ValidatedRequestSchema, ContainerTypes } from 'express-joi-validation';
-import { IPlot } from 'db/models/plots';
+import { IPlot } from 'db/models/plot';
 
 export const CreatePlotSchema = joi.object<Omit<IPlot, 'id'>>({
   teamId: joi.string().required().error(() => 'Create plot expecting a teamId'),

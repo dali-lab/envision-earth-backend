@@ -1,6 +1,6 @@
 import { plotService } from 'services';
 import db from '../../db/db';
-import { IPlot } from 'db/models/plots';
+import { IPlot } from 'db/models/plot';
 import dotenv from 'dotenv';
 
 dotenv.config();

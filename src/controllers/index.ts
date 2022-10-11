@@ -7,6 +7,7 @@ import photoController from './photo_controller';
 import herdController from './herd_controller';
 import cowCensusController from './cow_census_controller';
 import plotController from './plot_controller';
+import dungCensusController from './dung_census_controller';
 
 export {
   resourceController,
@@ -18,4 +19,5 @@ export {
   herdController,
   cowCensusController,
   plotController,
+  dungCensusController,
 };

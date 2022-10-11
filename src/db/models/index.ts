@@ -6,8 +6,9 @@ import Membership from './membership';
 import Herd from './herd';
 import CowCensus from './cow_census';
 import MemberVerificationCode from './membership_verification_code';
-import Photo from './photos';
-import Plot from './plots';
+import Photo from './photo';
+import Plot from './plot';
+import DungCensus from './dung_census';
 
 export {
   User,
@@ -20,4 +21,5 @@ export {
   MemberVerificationCode,
   Photo,
   Plot,
+  DungCensus,
 };

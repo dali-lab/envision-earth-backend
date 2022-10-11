@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
-import PlotModel, { IPlot } from 'db/models/plots';
+import PlotModel, { IPlot } from 'db/models/plot';
 import { Op } from 'sequelize';
 import { DatabaseQuery } from '../constants';
 import { BaseError } from 'errors';

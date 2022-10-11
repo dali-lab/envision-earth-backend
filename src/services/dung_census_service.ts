@@ -1,28 +1,28 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
-import CowCensusModel, { ICowCensus } from 'db/models/cow_census';
+import DungCensusModel, { IDungCensus } from 'db/models/dung_census';
 import { IPhoto } from 'db/models/photo';
 import { Op } from 'sequelize';
 import { DatabaseQuery } from '../constants';
 import { BaseError } from 'errors';
 import photoService, { IPhotoInput } from './photo_service';
 
-export interface CowCensusParams {
+export interface DungCensusParams {
   id?: string;
 
   herdId?: string;
+  plotId?: string;
   photoId?: string;
-  bcs?: number,
+  ratings?: number[],
   notes?: string;
-  tag?: string;
 
   offset?: number;
   limit?: number;
 }
 
-const constructQuery = (params: CowCensusParams) => {
-  const { id, herdId, photoId, bcs, notes, tag, offset, limit } = params;
-  const query: DatabaseQuery<CowCensusParams> = {
+const constructQuery = (params: DungCensusParams) => {
+  const { id, herdId, plotId, photoId, ratings, notes, offset, limit } = params;
+  const query: DatabaseQuery<DungCensusParams> = {
     where: {},
   };
   if (id) {
@@ -35,24 +35,24 @@ const constructQuery = (params: CowCensusParams) => {
       [Op.eq]: herdId,
     };
   }
+  if (plotId) {
+    query.where.plotId = {
+      [Op.eq]: plotId,
+    };
+  }
   if (photoId) {
     query.where.photoId = {
       [Op.eq]: photoId,
     };
   }
-  if (bcs) {
-    query.where.bcs = {
-      [Op.eq]: bcs,
+  if (ratings) {  // TODO: Fix this
+    query.where.ratings = {
+      [Op.eq]: JSON.stringify(ratings).replace('[', '{').replace(']', '}'),
     };
   }
   if (notes) {
     query.where.notes = {
       [Op.eq]: notes,
-    };
-  }
-  if (tag) {
-    query.where.tag = {
-      [Op.eq]: tag,
     };
   }
   if (limit) {
@@ -64,46 +64,51 @@ const constructQuery = (params: CowCensusParams) => {
   return query;
 };
 
-export const getCowCensuses = async (params: CowCensusParams) => {
+export const getDungCensuses = async (params: DungCensusParams) => {
   const query = constructQuery(params);
   try {
-    return await CowCensusModel.findAll(query);
+    return await DungCensusModel.findAll(query);
   } catch (e : any) {
     throw new BaseError(e.message, 500);
   }
 };
 
-export const editCowCensuses = async (herd: Partial<ICowCensus>, params: CowCensusParams) => {
+export const editDungCensuses = async (herd: Partial<IDungCensus>, params: DungCensusParams) => {
   const query = constructQuery(params);
   try {
-    return (await CowCensusModel.update(herd, { ...query, returning: true }))[1];
+    return (await DungCensusModel.update(herd, { ...query, returning: true }))[1];
   } catch (e: any) {
     throw new BaseError(e.message, 500);
   }
 };
 
-export const deleteCowCensuses = async (params: CowCensusParams) => {
+export const deleteDungCensuses = async (params: DungCensusParams) => {
   const query = constructQuery(params);
   try {
-    return await CowCensusModel.destroy(query);
+    return await DungCensusModel.destroy(query);
   } catch (e : any) {
     throw new BaseError(e.message, 500);
   }
 };
 
-export const createCowCensus = async (params: Omit<ICowCensus, 'id' | 'photoId'>, file?: IPhotoInput) => {
+export const createDungCensus = async (params: Omit<IDungCensus, 'id' | 'photoId'>, file?: IPhotoInput) => {
   try {
+    // This stringify conversion fixes "malformed array literal" error
+    const ratings = JSON.stringify(params.ratings).replace('[', '{').replace(']', '}');
     if (file) {
       const photo: IPhoto = await photoService.createPhoto(file);
-      return await CowCensusModel.create({
+    
+      return await DungCensusModel.create({
         ...params,
         id: uuidv4(),
+        ratings: ratings,
         photoId: photo.id,
       });
     } else {
-      return await CowCensusModel.create({
+      return await DungCensusModel.create({
         ...params,
         id: uuidv4(),
+        ratings: ratings,
         photoId: null,
       });
     }
@@ -113,10 +118,10 @@ export const createCowCensus = async (params: Omit<ICowCensus, 'id' | 'photoId'>
 };
 
 const herdService = {
-  createCowCensus,
-  getCowCensuses,
-  editCowCensuses,
-  deleteCowCensuses,
+  createDungCensus,
+  getDungCensuses,
+  editDungCensuses,
+  deleteDungCensuses,
 };
 
 export default herdService;

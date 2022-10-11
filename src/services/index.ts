@@ -7,6 +7,7 @@ import membershipService from './membership_service';
 import herdService from './herd_service';
 import cowCensusService from './cow_census_service';
 import plotService from './plot_service';
+import dungCensusService from './dung_census_service';
 
 export {
   userService,
@@ -18,4 +19,5 @@ export {
   photoService,
   cowCensusService,
   plotService,
+  dungCensusService,
 };

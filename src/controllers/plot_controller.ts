@@ -3,7 +3,7 @@ import { ValidatedRequest } from 'express-joi-validation';
 import { getSuccessfulDeletionMessage } from '../constants';
 import { plotService } from 'services';
 import { CreatePlotRequest, UpdatePlotRequest } from 'validation/plots';
-import { IPlot } from 'db/models/plots';
+import { IPlot } from 'db/models/plot';
 import { BaseError } from 'errors';
 
 const createPlot: RequestHandler = async (req: ValidatedRequest<CreatePlotRequest>, res, next) => {

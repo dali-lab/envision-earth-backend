@@ -2,7 +2,7 @@ import supertest from 'supertest';
 import plotRouter from '../../routers/plot_router';
 import { plotService } from '../../services';
 import db from '../../db/db';
-import { IPlot } from '../../db/models/plots';
+import { IPlot } from '../../db/models/plot';
 
 const request = supertest(plotRouter);
 

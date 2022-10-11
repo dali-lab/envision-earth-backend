@@ -9,7 +9,7 @@ import {
   AllowNull,
 } from 'sequelize-typescript';
 import Team from './team';
-import Photo from './photos';
+import Photo from './photo';
 
 export interface IPlot {
   id: string;
