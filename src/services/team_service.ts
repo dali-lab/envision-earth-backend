@@ -5,18 +5,25 @@ import UserModel from 'db/models/user';
 import { Op } from 'sequelize';
 import { DatabaseQuery } from '../constants';
 import { BaseError } from 'errors';
+import { generateCode } from '../util';
 
 export interface TeamParams {
   id?: string;
-  name?: string;
   userId?: string;
+  
+  name?: string;
+  acreSize?: number;
+  address?: string;
+  yrsRanch?: number;
+  yrsHolMang?: number;
+  code?: string;
 
   limit?: number;
   offset?: number
 }
 
 const constructQuery = (params: TeamParams) => {
-  const { id, name, userId, limit, offset } = params;
+  const { id, userId, name, acreSize, address, yrsRanch, yrsHolMang, code, limit, offset } = params;
   const query: DatabaseQuery<TeamParams> = {
     where: {},
   };
@@ -28,6 +35,31 @@ const constructQuery = (params: TeamParams) => {
   if (name) {
     query.where.name = {
       [Op.eq]: name,
+    };
+  }
+  if (acreSize) {
+    query.where.acreSize = {
+      [Op.eq]: acreSize,
+    };
+  }
+  if (address) {
+    query.where.address = {
+      [Op.eq]: address,
+    };
+  }
+  if (yrsRanch) {
+    query.where.yrsRanch = {
+      [Op.eq]: yrsRanch,
+    };
+  }
+  if (yrsHolMang) {
+    query.where.yrsHolMang = {
+      [Op.eq]: yrsHolMang,
+    };
+  }
+  if (code) {
+    query.where.code = {
+      [Op.eq]: code,
     };
   }
   if (userId) {
@@ -70,11 +102,12 @@ export const deleteTeams = async (params: TeamParams) => {
   }
 };
 
-export const createTeam = async (params: Omit<ITeam, 'id'>) => {
+export const createTeam = async (params: Omit<ITeam, 'id' | 'code'>) => {
   try {
     return await TeamModel.create({
       ...params,
       id: uuidv4(),
+      code: generateCode(8),
     });
   } catch (e: any) {
     throw new BaseError(e.message, 500);

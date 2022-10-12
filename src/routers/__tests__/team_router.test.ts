@@ -8,10 +8,20 @@ const request = supertest(teamRouter);
 
 const teamDataA: Omit<ITeam, 'id'> = {
   name: 'Team A',
+  acreSize: 200,
+  address: 'Class of 1953 Commons, 6 Mass Row, Hanover, NH 03755',
+  yrsRanch: 2,
+  yrsHolMang: 2,
+  code: '', // Filled in later
 };
 
 const teamDataB: Omit<ITeam, 'id'> = {
   name: 'Team B',
+  acreSize: 600,
+  address: '6025 Main St, Hanover, NH 03755',
+  yrsRanch: 6,
+  yrsHolMang: 6,
+  code:  'BQBQBQBQ', 
 };
 
 let validId = '';
@@ -21,6 +31,11 @@ const idUser = '68b0d858-9e75-49b0-902e-2b587bd9a996'; // from seeder
 const existingTeamData: ITeam = {
   id: 'ab9e8aee-0f7b-4ac8-9fd5-5bb982c0367d',
   name: 'Default Team',
+  acreSize: 400,
+  address: '15 Thayer Dr, Hanover, NH 03755',
+  yrsRanch: 3,
+  yrsHolMang: 3,
+  code: 'CCCCCCCC',
 };
 
 // Mocks requireAuth server middleware
@@ -55,17 +70,19 @@ describe('Working team router', () => {
       const createSpy = jest.spyOn(teamService, 'createTeam');
 
       const attempts = Object.keys(teamDataA).map(async (key) => {
-        const team = { ...teamDataA };
-        delete team[key];
-
-        const res = await request
-          .post('/')
-          .set('Authorization', 'Bearer dummy_token')
-          .send(team);
-
-        expect(res.status).toBe(500);
-        expect(res.body.errors.length).toBe(1);
-        expect(createSpy).not.toHaveBeenCalled();
+        if (key !== 'code') {
+          const team = { ...teamDataA };
+          delete team[key];
+  
+          const res = await request
+            .post('/')
+            .set('Authorization', 'Bearer dummy_token')
+            .send(team);
+  
+          expect(res.status).toBe(500);
+          expect(res.body.errors.length).toBe(1);
+          expect(createSpy).not.toHaveBeenCalled();
+        }
       });
       await Promise.all(attempts);
     });
@@ -74,19 +91,21 @@ describe('Working team router', () => {
       const createSpy = jest.spyOn(teamService, 'createTeam');
 
       const attempts = Object.keys(teamDataA).map(async (key) => {
-        const team = { ...teamDataA };
-        team[key] = typeof team[key] === 'number'
-          ? 'some string'
-          : 0;
-
-        const res = await request
-          .post('/')
-          .set('Authorization', 'Bearer dummy_token')
-          .send(team);
-
-        expect(res.status).toBe(500);
-        expect(res.body.errors.length).toBe(1);
-        expect(createSpy).not.toHaveBeenCalled();
+        if (key !== 'code') {
+          const team = { ...teamDataA };
+          team[key] = typeof team[key] === 'number'
+            ? 'some string'
+            : 0;
+  
+          const res = await request
+            .post('/')
+            .set('Authorization', 'Bearer dummy_token')
+            .send(team);
+  
+          expect(res.status).toBe(500);
+          expect(res.body.errors.length).toBe(1);
+          expect(createSpy).not.toHaveBeenCalled();
+        }
       });
       await Promise.all(attempts);
     });
@@ -97,16 +116,24 @@ describe('Working team router', () => {
       const res = await request
         .post('/')
         .set('Authorization', 'Bearer dummy_token')
-        .send(teamDataA);
+        .send({
+          name: teamDataA.name,
+          acreSize: teamDataA.acreSize,
+          address: teamDataA.address,
+          yrsRanch: teamDataA.yrsRanch,
+          yrsHolMang: teamDataA.yrsHolMang,
+        });
 
       expect(res.status).toBe(201);
       Object.keys(teamDataA).forEach((key) => {
-        expect(res.body[key]).toBe(teamDataA[key]);
+        if (key === 'code') expect(res.body[key]).toBeDefined();
+        else expect(res.body[key]).toBe(teamDataA[key]);
       });
       expect(createSpy).toHaveBeenCalled();
       createSpy.mockClear();
 
       validId = String(res.body.id);
+      teamDataA.code = res.body.code;
     });
   });
 
@@ -205,19 +232,22 @@ describe('Working team router', () => {
       const updateSpy = jest.spyOn(teamService, 'editTeams');
 
       const attempts = Object.keys(teamDataB).map(async (key) => {
-        const teamUpdate = { [key]: teamDataB[key] };
+        // cannot update code
+        if (key != 'code') {
+          const teamUpdate = { [key]: teamDataB[key] };
 
-        const res = await request
-          .patch(`/${validId}`)
-          .set('Authorization', 'Bearer dummy_token')
-          .send(teamUpdate);
-
-        expect(res.status).toBe(200);
-        expect(res.body[key]).toBe(teamDataB[key]);
+          const res = await request
+            .patch(`/${validId}`)
+            .set('Authorization', 'Bearer dummy_token')
+            .send(teamUpdate);
+  
+          expect(res.status).toBe(200);
+          expect(res.body[key]).toBe(teamDataB[key]);
+        }
       });
       await Promise.all(attempts);
 
-      expect(updateSpy).toHaveBeenCalledTimes(Object.keys(teamDataB).length);
+      expect(updateSpy).toHaveBeenCalledTimes(Object.keys(teamDataB).length - 1);
       updateSpy.mockClear();
 
       const res = await request
@@ -225,7 +255,8 @@ describe('Working team router', () => {
         .set('Authorization', 'Bearer dummy_token');
 
       Object.keys(teamDataB).forEach((key) => {
-        expect(res.body[key]).toBe(teamDataB[key]);
+        if (key === 'code') expect(res.body[key]).toBe(teamDataA[key]);
+        else expect(res.body[key]).toBe(teamDataB[key]);
       });
     });
   });
