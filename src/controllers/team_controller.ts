@@ -2,17 +2,22 @@ import { RequestHandler } from 'express';
 import { ValidatedRequest } from 'express-joi-validation';
 import { getSuccessfulDeletionMessage } from '../constants';
 import { teamService } from 'services';
-import { CreateUserRequest, UpdateUserRequest } from 'validation/users';
+import { CreateTeamRequest, UpdateTeamRequest } from 'validation/teams';
 import { ITeam } from 'db/models/team';
 import { BaseError } from 'errors';
 
-const createTeam: RequestHandler = async (req: ValidatedRequest<CreateUserRequest>, res, next) => {
+const createTeam: RequestHandler = async (req: ValidatedRequest<CreateTeamRequest>, res, next) => {
   try {
     const {
       name, 
+      acreSize,
+      address,
+      yrsRanch,
+      yrsHolMang,
+      // no code
     } = req.body;
 
-    const newTeam = await teamService.createTeam({ name });
+    const newTeam = await teamService.createTeam({ name, acreSize, address, yrsRanch, yrsHolMang });
 
     res.status(201).json(newTeam);
   } catch (error) {
@@ -25,8 +30,9 @@ const getTeam: RequestHandler = async (req, res, next) => {
     const id = req.query?.id as string;
     const name = req.query?.name as string;
     const userId = req.query?.userId as string;
+    const code = req.query?.code as string;
     
-    const teams : ITeam[] = await teamService.getTeams({ id, name, userId });
+    const teams : ITeam[] = await teamService.getTeams({ id, name, userId, code });
     if (teams.length === 0) throw new BaseError('Team not found', 404);
     else res.status(200).json(teams[0]);
   } catch (error) {
@@ -34,13 +40,20 @@ const getTeam: RequestHandler = async (req, res, next) => {
   }
 };
 
-const updateTeam: RequestHandler = async (req: ValidatedRequest<UpdateUserRequest>, res, next) => {
+const updateTeam: RequestHandler = async (req: ValidatedRequest<UpdateTeamRequest>, res, next) => {
   try {
-    // ! Only allow user to update certain fields (avoids privilege elevation)
-    const { name } = req.body;
+    // Only allow user to update certain fields
+    const {       
+      name, 
+      acreSize,
+      address,
+      yrsRanch,
+      yrsHolMang,
+      // no code 
+    } = req.body;
 
     const updatedTeams = await teamService.editTeams(
-      { name },
+      { name, acreSize, address, yrsRanch, yrsHolMang },
       { id: req.params.id },
     );
 

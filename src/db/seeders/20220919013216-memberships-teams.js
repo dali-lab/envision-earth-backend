@@ -11,10 +11,20 @@ module.exports = {
         {
           id: '6aab56d3-ac8c-4f3b-a59b-c03e51c76e5d',
           name: 'Test Team',
+          acreSize: 100,
+          address: '10 N Main St, Hanover, NH 03755',
+          yrsRanch: 1,
+          yrsHolMang: 1,
+          code: 'AAAAAAAA',
         },
         {
           id: 'ab9e8aee-0f7b-4ac8-9fd5-5bb982c0367d',
+          acreSize: 400,
           name: 'Default Team',
+          address: '15 Thayer Dr, Hanover, NH 03755',
+          yrsRanch: 3,
+          yrsHolMang: 3,
+          code: 'CCCCCCCC',
         },
       ];
       await queryInterface.bulkInsert(
