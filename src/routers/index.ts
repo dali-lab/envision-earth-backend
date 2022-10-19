@@ -8,6 +8,7 @@ import cowCensusRouter from './cow_census_router';
 import photoRouter from './photo_router';
 import plotRouter from './plot_router';
 import dungCensusRouter from './dung_census_router';
+import forageQualityCensusRouter from './forage_quality_census_router';
 
 export {
   authRouter, 
@@ -20,4 +21,5 @@ export {
   photoRouter,
   plotRouter,
   dungCensusRouter,
+  forageQualityCensusRouter,
 };
