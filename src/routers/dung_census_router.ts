@@ -30,15 +30,10 @@ router.route('/')
   .get(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
-    dungCensusController.getDungCensuses,
+    dungCensusController.getDungCensus,
   );
 
 router.route('/:id')
-  .get(
-    requireScope(UserScopes.User),
-    requireMembership(TeamScopes.User),
-    dungCensusController.getDungCensus,
-  )
   .patch(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),

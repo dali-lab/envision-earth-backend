@@ -10,6 +10,7 @@ const createCowCensus: RequestHandler = async (req: ValidatedRequest<CreateCowCe
   try {
     const {
       herdId,
+      plotId,
       bcs,
       notes,
       tag,
@@ -18,6 +19,7 @@ const createCowCensus: RequestHandler = async (req: ValidatedRequest<CreateCowCe
 
     const newCowCensus = await cowCensusService.createCowCensus({ 
       herdId,
+      plotId,
       bcs,
       notes,
       tag,
@@ -25,53 +27,29 @@ const createCowCensus: RequestHandler = async (req: ValidatedRequest<CreateCowCe
 
     res.status(201).json(newCowCensus);
   } catch (error) {
-    console.log(error);
-    next(error);
-  }
-};
-
-const getCowCensuses: RequestHandler = async (req, res, next) => {
-  try {
-    const id = req.query?.id as string;
-    const herdId = req.query?.name as string;
-    const photoId = req.query?.photoId as string;
-    const bcs = Number(req.query?.bcs);
-    const notes = req.query?.notes as string;
-    const tag = req.query?.tag as string;
-
-    const cowCensuses = await cowCensusService.getCowCensuses({
-      id,
-      herdId,
-      photoId,
-      bcs,
-      notes,
-      tag,
-    });
-    res.status(200).json(cowCensuses);
-  } catch (error) {
     next(error);
   }
 };
 
 const getCowCensus: RequestHandler = async (req, res, next) => {
   try {
-    const id = req.params.id ;
+    // cannot query by bcs here
+    const id = req.query?.id as string;
     const herdId = req.query?.name as string;
+    const plotId = req.query?.plotId as string;
     const photoId = req.query?.photoId as string;
-    const bcs = Number(req.query?.bcs);
     const notes = req.query?.notes as string;
     const tag = req.query?.tag as string;
     
     const cowCensuses = await cowCensusService.getCowCensuses({
       id,
       herdId,
+      plotId,
       photoId,
-      bcs,
       notes,
       tag,
     });
     if (cowCensuses.length === 0) throw new BaseError('cowCensus not found', 404);
-    if (cowCensuses.length > 1) throw new BaseError('Multiple cowCensus found', 404);
     else res.status(200).json(cowCensuses[0]);
   } catch (error) {
     next(error);
@@ -82,6 +60,7 @@ const updateCowCensus: RequestHandler = async (req: ValidatedRequest<UpdateCowCe
   try {
     const {
       herdId,
+      plotId,
       photoId,
       bcs,
       notes,
@@ -89,7 +68,7 @@ const updateCowCensus: RequestHandler = async (req: ValidatedRequest<UpdateCowCe
     } = req.body;
 
     const updatedCowCensuses = await cowCensusService.editCowCensuses(
-      { herdId, photoId, bcs, notes, tag },
+      { herdId, plotId, photoId, bcs, notes, tag },
       { id: req.params.id },
     );
 
@@ -115,7 +94,6 @@ const deleteCowCensus: RequestHandler = async (req, res, next) => {
 
 const herdController = {
   createCowCensus,
-  getCowCensuses,
   getCowCensus,
   updateCowCensus,
   deleteCowCensus,

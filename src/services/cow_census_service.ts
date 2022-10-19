@@ -11,8 +11,9 @@ export interface CowCensusParams {
   id?: string;
 
   herdId?: string;
+  plotId?: string;
   photoId?: string;
-  bcs?: number,
+  bcs?: number[],
   notes?: string;
   tag?: string;
 
@@ -21,7 +22,7 @@ export interface CowCensusParams {
 }
 
 const constructQuery = (params: CowCensusParams) => {
-  const { id, herdId, photoId, bcs, notes, tag, offset, limit } = params;
+  const { id, herdId, plotId, photoId, bcs, notes, tag, offset, limit } = params;
   const query: DatabaseQuery<CowCensusParams> = {
     where: {},
   };
@@ -35,6 +36,11 @@ const constructQuery = (params: CowCensusParams) => {
       [Op.eq]: herdId,
     };
   }
+  if (plotId) {
+    query.where.plotId = {
+      [Op.eq]: plotId,
+    };
+  }
   if (photoId) {
     query.where.photoId = {
       [Op.eq]: photoId,
@@ -42,7 +48,7 @@ const constructQuery = (params: CowCensusParams) => {
   }
   if (bcs) {
     query.where.bcs = {
-      [Op.eq]: bcs,
+      [Op.eq]: JSON.stringify(bcs).replace('[', '{').replace(']', '}'),
     };
   }
   if (notes) {
@@ -73,10 +79,14 @@ export const getCowCensuses = async (params: CowCensusParams) => {
   }
 };
 
-export const editCowCensuses = async (herd: Partial<ICowCensus>, params: CowCensusParams) => {
+export const editCowCensuses = async (cowCensus: Partial<ICowCensus>, params: CowCensusParams) => {
   const query = constructQuery(params);
+  if (cowCensus.bcs) {
+    cowCensus.bcs = JSON.stringify(cowCensus.bcs).replace('[', '{').replace(']', '}');
+  }
+
   try {
-    return (await CowCensusModel.update(herd, { ...query, returning: true }))[1];
+    return (await CowCensusModel.update(cowCensus, { ...query, returning: true }))[1];
   } catch (e: any) {
     throw new BaseError(e.message, 500);
   }
@@ -93,30 +103,35 @@ export const deleteCowCensuses = async (params: CowCensusParams) => {
 
 export const createCowCensus = async (params: Omit<ICowCensus, 'id' | 'photoId'>, file?: IPhotoInput) => {
   try {
+    // This stringify conversion fixes "malformed array literal" error
+    const bcs = JSON.stringify(params.bcs).replace('[', '{').replace(']', '}');
     if (file) {
       const photo: IPhoto = await photoService.createPhoto(file);
       return await CowCensusModel.create({
         ...params,
         id: uuidv4(),
         photoId: photo.id,
+        bcs: bcs,
       });
     } else {
       return await CowCensusModel.create({
         ...params,
         id: uuidv4(),
         photoId: null,
+        bcs: bcs,
       });
     }
   } catch (e: any) {
+    console.log(e);
     throw new BaseError(e.message, 500);
   }
 };
 
-const herdService = {
+const cowCensusService = {
   createCowCensus,
   getCowCensuses,
   editCowCensuses,
   deleteCowCensuses,
 };
 
-export default herdService;
+export default cowCensusService;

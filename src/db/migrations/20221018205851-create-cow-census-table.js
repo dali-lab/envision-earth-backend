@@ -14,13 +14,25 @@ module.exports = {
           key: 'id',
         },
       },
+      plotId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'plots',
+          key: 'id',
+        },
+      },
       photoId: {
         type: Sequelize.UUID,
         allowNull: true,
+        references: {
+          model: 'photos',
+          key: 'id',
+        },
       },
       bcs: {
-        type: Sequelize.FLOAT,
-        allowNull: false,
+        type: Sequelize.ARRAY(Sequelize.FLOAT),
+        defaultValue: [],
       },
       notes: {
         type: Sequelize.STRING,

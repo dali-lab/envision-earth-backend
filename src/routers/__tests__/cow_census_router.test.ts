@@ -7,26 +7,29 @@ import { ICowCensus } from '../../db/models/cow_census';
 const request = supertest(cowCensusRouter);
 
 const idHerd = '187dc38d-bc3a-4eb4-ac99-74e04de04d48'; // from seeder
-const idPhoto = 'ef57a439-4dad-4010-86cd-b2f9d58183bb'; // from seeder
+const idPlot = '7c175ec1-6822-43d1-962e-8bed235100f6'; // from seeder
+const idPhoto = null; // TODO: base64
 
 const cowCensusDataA: Omit<ICowCensus, 'id'> = {
   herdId: idHerd,
+  plotId: idPlot,
   photoId: idPhoto,
-  bcs: 3,
-  notes: 'Waltz, bad nymph, for quick jigs vex.',
+  bcs: [2, 3, 4],
+  notes: 'Sphinx of black quartz, judge my vow.',
   tag: 'F123456',
 };
 
 const cowCensusDataB: Omit<ICowCensus, 'id'> = {
   herdId: idHerd,
+  plotId: idPlot,
   photoId: idPhoto,
-  bcs: 9,
-  notes: 'How vexingly quick daft zebras jump!',
+  bcs: [6, 7, 8],
+  notes: 'Replacement entry',
   tag: 'F567890',
 };
 
 let validId = '';
-const invalidId = 'a70945f7-b6ab-40f0-916b-e3fdf36388b8';
+const invalidId = '8a891ee5-28a7-4e5f-a205-8f8a0a171703';
 
 // Mocks requireAuth server middleware
 jest.mock('../../auth/requireAuth');
@@ -56,62 +59,25 @@ describe('Working cowCensus router', () => {
       expect(createSpy).not.toHaveBeenCalled();
     });
 
-    it('blocks creation when missing field', async () => {
-      const createSpy = jest.spyOn(cowCensusService, 'createCowCensus');
-
-      const attempts = Object.keys(cowCensusDataA).map(async (key) => {
-        const cowCensus = { ...cowCensusDataA };
-        delete cowCensus[key];
-
-        const res = await request
-          .post('/')
-          .set('Authorization', 'Bearer dummy_token')
-          .send(cowCensus);
-
-        expect(res.status).toBe(500);
-        expect(res.body.errors.length).toBe(1);
-        expect(createSpy).not.toHaveBeenCalled();
-      });
-      await Promise.all(attempts);
-    });
-
-    it('blocks creation when field invalid', async () => {
-      const createSpy = jest.spyOn(cowCensusService, 'createCowCensus');
-
-      const attempts = Object.keys(cowCensusDataA).map(async (key) => {
-        const cowCensus = { ...cowCensusDataA };
-        if (typeof cowCensus[key] === 'number') {
-          cowCensus[key] = 'some string';
-        } else if (typeof cowCensus[key] === 'object') {
-          cowCensus[key] = undefined;
-        } else {
-          cowCensus[key] = 0;
-        }
-
-        const res = await request
-          .post('/')
-          .set('Authorization', 'Bearer dummy_token')
-          .send(cowCensus);
-
-        expect(res.status).toBe(500);
-        expect(res.body.errors.length).toBe(1);
-        expect(createSpy).not.toHaveBeenCalled();
-      });
-      await Promise.all(attempts);
-    });
-
     it('creates cowCensus when body is valid', async () => {
       const createSpy = jest.spyOn(cowCensusService, 'createCowCensus');
 
       const res = await request
         .post('/')
         .set('Authorization', 'Bearer dummy_token')
-        .send(cowCensusDataA);
+        .send({
+          herdId: cowCensusDataA.herdId,
+          plotId: cowCensusDataA.plotId,
+          // photo: null,
+          bcs: cowCensusDataA.bcs,
+          notes: cowCensusDataA.notes,
+          tag: cowCensusDataA.tag,
+        });
 
       expect(res.status).toBe(201);
       Object.keys(cowCensusDataA).forEach((key) => {
-        if (key === 'breedingDate' || key === 'calvingDate') {
-          expect(new Date(res.body[key])).toEqual(cowCensusDataA[key]);
+        if (key === 'bcs') {
+          expect(res.body[key]).toEqual(cowCensusDataA[key]);
         } else expect(res.body[key]).toBe(cowCensusDataA[key]);
       });
       expect(createSpy).toHaveBeenCalled();
@@ -121,7 +87,7 @@ describe('Working cowCensus router', () => {
     });
   });
 
-  describe('GET /?...=...', () => {
+  describe('GET /?...', () => {
     it('returns 404 when cowCensus not found', async () => {
       const getSpy = jest.spyOn(cowCensusService, 'getCowCensuses');
 
@@ -134,48 +100,17 @@ describe('Working cowCensus router', () => {
       getSpy.mockClear();
     });
 
-    it('returns cowCensuses by query', async () => {
-      const getSpy = jest.spyOn(cowCensusService, 'getCowCensuses');
-
-      const res = await request
-        .get(`/?tag=${'F123456'}`)
-        .set('Authorization', 'Bearer dummy_token');
-
-      expect(res.status).toBe(200);
-      Object.keys(cowCensusDataA).forEach((key) => {
-        if (key === 'breedingDate' || key === 'calvingDate') {
-          expect(new Date(res.body[key])).toEqual(cowCensusDataA[key]);
-        } else expect(res.body[key]).toBe(cowCensusDataA[key]);
-      });
-      expect(getSpy).toHaveBeenCalled();
-      getSpy.mockClear();
-    });
-  });
-
-  describe('GET /:id?...=...', () => {
-    it('returns 404 when cowCensus not found', async () => {
-      const getSpy = jest.spyOn(cowCensusService, 'getCowCensuses');
-
-      const res = await request
-        .get(`/${invalidId}`)
-        .set('Authorization', 'Bearer dummy_token');
-
-      expect(res.status).toBe(404);
-      expect(getSpy).rejects.toThrowError();
-      getSpy.mockClear();
-    });
-
     it('returns single cowCensus if found - generic', async () => {
       const getSpy = jest.spyOn(cowCensusService, 'getCowCensuses');
 
       const res = await request
-        .get(`/${validId}`)
+        .get(`/?id=${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
       Object.keys(cowCensusDataA).forEach((key) => {
-        if (key === 'breedingDate' || key === 'calvingDate') {
-          expect(new Date(res.body[key])).toEqual(cowCensusDataA[key]);
+        if (key === 'bcs') {
+          expect(res.body[key]).toEqual(cowCensusDataA[key]);
         } else expect(res.body[key]).toBe(cowCensusDataA[key]);
       });
       expect(getSpy).toHaveBeenCalled();
@@ -186,13 +121,13 @@ describe('Working cowCensus router', () => {
       const getSpy = jest.spyOn(cowCensusService, 'getCowCensuses');
 
       const res = await request
-        .get(`/${validId}?tag=${'F123456'}`)
+        .get(`/?notes=${'Sphinx of black quartz, judge my vow.'}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
       Object.keys(cowCensusDataA).forEach((key) => {
-        if (key === 'breedingDate' || key === 'calvingDate') {
-          expect(new Date(res.body[key])).toEqual(cowCensusDataA[key]);
+        if (key === 'bcs') {
+          expect(res.body[key]).toEqual(cowCensusDataA[key]);
         } else expect(res.body[key]).toBe(cowCensusDataA[key]);
       });
       expect(getSpy).toHaveBeenCalled();
@@ -225,35 +160,6 @@ describe('Working cowCensus router', () => {
       updateSpy.mockClear();
     });
 
-    it('blocks update when field invalid', async () => {
-      const updateSpy = jest.spyOn(cowCensusService, 'editCowCensuses');
-
-      const attempts = Object.keys(cowCensusDataA).concat('otherkey').map(async (key) => {
-        
-        const cowCensusUpdate = {
-          id: validId,
-        }; 
-        if (key === 'breedingDate' || key === 'calvingDate') {
-          cowCensusUpdate[key] = 'not a date';
-        } else if (typeof cowCensusDataB[key] === 'number') {
-          cowCensusUpdate[key] = 'some string';
-        } else {
-          cowCensusUpdate[key] = 0;
-        }
-        
-        const res = await request
-          .patch(`/${validId}`)
-          .set('Authorization', 'Bearer dummy_token')
-          .send(cowCensusUpdate);
-        // console.log(res);
-
-        expect(res.status).toBe(400);
-        expect(res.body.errors.length).toBe(1);
-        expect(updateSpy).not.toHaveBeenCalled();
-      });
-      await Promise.all(attempts);
-    });
-
     it('updates cowCensus when body is valid', async () => {
       const updateSpy = jest.spyOn(cowCensusService, 'editCowCensuses');
 
@@ -266,8 +172,8 @@ describe('Working cowCensus router', () => {
           .send(cowCensusUpdate);
 
         expect(res.status).toBe(200);
-        if (key === 'breedingDate' || key === 'calvingDate') {
-          expect(new Date(res.body[key])).toEqual(cowCensusDataB[key]);
+        if (key === 'bcs') {
+          expect(res.body[key]).toEqual(cowCensusDataB[key]);
         } else expect(res.body[key]).toBe(cowCensusDataB[key]);
       });
       await Promise.all(attempts);
@@ -276,12 +182,12 @@ describe('Working cowCensus router', () => {
       updateSpy.mockClear();
 
       const res = await request
-        .get(`/${validId}`)
+        .get(`/?id=${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       Object.keys(cowCensusDataB).forEach((key) => {
-        if (key === 'breedingDate' || key === 'calvingDate') {
-          expect(new Date(res.body[key])).toEqual(cowCensusDataB[key]);
+        if (key === 'bcs') {
+          expect(res.body[key]).toEqual(cowCensusDataB[key]);
         } else expect(res.body[key]).toBe(cowCensusDataB[key]);
       });
     });

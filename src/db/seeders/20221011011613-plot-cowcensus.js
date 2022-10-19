@@ -38,6 +38,40 @@ module.exports = {
         })),
         { transaction },
       );
+
+      /**
+       * Cow Census Data
+       */
+      const cowCensuses = [
+        {
+          id: '98e8f7d6-f817-44c1-b39a-1ac21be26162',
+          herdId: '187dc38d-bc3a-4eb4-ac99-74e04de04d48',
+          plotId: '7c175ec1-6822-43d1-962e-8bed235100f6',
+          photoId: 'ef57a439-4dad-4010-86cd-b2f9d58183bb',
+          bcs: [1, 2, 8],
+          notes: 'The quick brown fox jumped over the lazy dog',
+          tag: 'qwerty',
+        },
+        {
+          id: 'd3e2319b-b38b-4b9f-8667-be0911c212b9',
+          herdId: '187dc38d-bc3a-4eb4-ac99-74e04de04d48',
+          plotId: '7c175ec1-6822-43d1-962e-8bed235100f6',
+          photoId: 'ef57a439-4dad-4010-86cd-b2f9d58183bb',
+          bcs: [2, 4, 6],
+          notes: 'There can be multiple cow censuses!',
+          tag: 'qwerty',
+        },
+      ];
+      await queryInterface.bulkInsert(
+        'cow_census',
+        cowCensuses.map((cowCensus) => ({
+          ...cowCensus,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })),
+        { transaction },
+      );
+      
       await transaction.commit();
     } catch (e) {
       console.log(e);
@@ -49,6 +83,7 @@ module.exports = {
   async down(queryInterface) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
+      await queryInterface.bulkDelete('cow_census', null, { transaction });
       await queryInterface.bulkDelete('plots', null, { transaction });
       await transaction.commit();
     } catch (e) {

@@ -9,12 +9,15 @@ import {
   AllowNull,
 } from 'sequelize-typescript';
 import Herd from './herd';
+import Plot from './plot';
+import Photo from './photo';
 
 export interface ICowCensus {
   id: string;
   herdId: string;
+  plotId: string;
   photoId: string | null;
-  bcs: number,
+  bcs: number[] | string;
   notes: string;
   tag: string;
 }
@@ -33,13 +36,19 @@ class CowCensus extends Model<ICowCensus> implements ICowCensus {
   @Column(DataTypes.UUID)
     herdId: string;
 
+  @ForeignKey(() => Plot)
+  @AllowNull(false)
+  @Column(DataTypes.UUID)
+    plotId: string;
+
+  @ForeignKey(() => Photo)
   @AllowNull(true)
   @Column(DataTypes.STRING)
     photoId: string;
 
   @AllowNull(false)
   @Column(DataTypes.NUMBER)
-    bcs: number;
+    bcs: number[];
   
   @AllowNull(false)
   @Column(DataTypes.NUMBER)

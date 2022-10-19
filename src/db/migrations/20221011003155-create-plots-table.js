@@ -55,19 +55,6 @@ module.exports = {
           allowNull: false,
         },
       });
-      await queryInterface.addColumn(
-        'cow_census',
-        'plotId',
-        {
-          type: Sequelize.UUID,
-          allowNull: true,
-          references: {
-            model: 'plots',
-            key: 'id',
-          },
-        },
-        { transaction },
-      );
       await transaction.commit();
     } catch (err) {
       console.error(err);
@@ -80,7 +67,6 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
     try {
       await queryInterface.dropTable('plots', { transaction });
-      await queryInterface.removeColumn('cow_census', 'plotId', { transaction });
       await transaction.commit();
     } catch (err) {
       console.error(err);
