@@ -34,14 +34,30 @@ const createPlot: RequestHandler = async (req: ValidatedRequest<CreatePlotReques
   }
 };
 
-const getPlot: RequestHandler = async (req, res, next) => {
+const getPlots: RequestHandler = async (req, res, next) => {
   try {
     // Can only query on certain fields
     const id = req.query?.id as string;
     const teamId = req.query?.teamId as string;
+    const name = req.query?.name as string;
+
+    const plots : IPlot[] = await plotService.getPlots({ id, teamId, name });
+    res.status(200).json(plots);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getPlot: RequestHandler = async (req, res, next) => {
+  try {
+    // Can only query on certain fields
+    const id = req.params.id;
+    const teamId = req.query?.teamId as string;
+    const name = req.query?.name as string;
     
-    const plots : IPlot[] = await plotService.getPlots({ id, teamId });
+    const plots : IPlot[] = await plotService.getPlots({ id, teamId, name });
     if (plots.length === 0) throw new BaseError('Plot not found', 404);
+    else if (plots.length > 1) throw new BaseError('Multiple plots found', 404);
     else res.status(200).json(plots[0]);
   } catch (error) {
     next(error);
@@ -87,6 +103,7 @@ const deletePlot: RequestHandler = async (req, res, next) => {
 
 const plotController = {
   createPlot,
+  getPlots,
   getPlot,
   updatePlot,
   deletePlot,

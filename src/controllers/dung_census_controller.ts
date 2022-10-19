@@ -29,7 +29,7 @@ const createDungCensus: RequestHandler = async (req: ValidatedRequest<CreateDung
   }
 };
 
-const getDungCensus: RequestHandler = async (req, res, next) => {
+const getDungCensuses: RequestHandler = async (req, res, next) => {
   try {
     // Cannot query by ratings here
     const id = req.query?.id as string;
@@ -46,7 +46,31 @@ const getDungCensus: RequestHandler = async (req, res, next) => {
       notes,
     });
 
+    res.status(200).json(dungCensuses);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getDungCensus: RequestHandler = async (req, res, next) => {
+  try {
+    // Cannot query by ratings here
+    const id = req.params.id;
+    const herdId = req.query?.herdId as string;
+    const plotId = req.query?.plotId as string;
+    const photoId = req.query?.photoId as string;
+    const notes = req.query?.notes as string;
+
+    const dungCensuses = await dungCensusService.getDungCensuses({
+      id,
+      herdId,
+      plotId,
+      photoId,
+      notes,
+    });
+
     if (dungCensuses.length === 0) throw new BaseError('no dungCensus entries found', 404);
+    else if (dungCensuses.length > 1) throw new BaseError('Multiple dungCensus entries found', 404);
     else res.status(200).json(dungCensuses[0]);
   } catch (error) {
     next(error);
@@ -90,6 +114,7 @@ const deleteDungCensus: RequestHandler = async (req, res, next) => {
 
 const herdController = {
   createDungCensus,
+  getDungCensuses,
   getDungCensus,
   updateDungCensus,
   deleteDungCensus,

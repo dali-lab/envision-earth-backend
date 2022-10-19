@@ -87,12 +87,45 @@ describe('Working cowCensus router', () => {
     });
   });
 
-  describe('GET /?...', () => {
-    it('returns 404 when cowCensus not found', async () => {
+  describe('GET /?...=...', () => {
+    it('returns empty array if no cowCensuses found', async () => {
       const getSpy = jest.spyOn(cowCensusService, 'getCowCensuses');
 
       const res = await request
         .get(`/?id=${invalidId}`)
+        .set('Authorization', 'Bearer dummy_token');
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual([]);
+      getSpy.mockClear();
+    });
+
+    it('returns cowCensuses by query', async () => {
+      const getSpy = jest.spyOn(cowCensusService, 'getCowCensuses');
+
+      const res = await request
+        .get(`/?tag=${cowCensusDataA.tag}`)
+        .set('Authorization', 'Bearer dummy_token');
+
+      expect(res.status).toBe(200);
+
+      Object.keys(cowCensusDataA).forEach((key) => {
+        if (key === 'bcs') {
+          expect(res.body[0][key]).toEqual(cowCensusDataA[key]);
+        } else expect(res.body[0][key]).toBe(cowCensusDataA[key]);
+      });
+      expect(getSpy).toHaveBeenCalled();
+      getSpy.mockClear();
+    });
+  });
+
+
+  describe('GET /:id?...=...', () => {
+    it('returns 404 when cowCensus not found', async () => {
+      const getSpy = jest.spyOn(cowCensusService, 'getCowCensuses');
+
+      const res = await request
+        .get(`/${invalidId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(404);
@@ -104,7 +137,7 @@ describe('Working cowCensus router', () => {
       const getSpy = jest.spyOn(cowCensusService, 'getCowCensuses');
 
       const res = await request
-        .get(`/?id=${validId}`)
+        .get(`/${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
@@ -121,7 +154,7 @@ describe('Working cowCensus router', () => {
       const getSpy = jest.spyOn(cowCensusService, 'getCowCensuses');
 
       const res = await request
-        .get(`/?notes=${'Sphinx of black quartz, judge my vow.'}`)
+        .get(`/${validId}?tag=${cowCensusDataA.tag}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
@@ -182,7 +215,7 @@ describe('Working cowCensus router', () => {
       updateSpy.mockClear();
 
       const res = await request
-        .get(`/?id=${validId}`)
+        .get(`/${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       Object.keys(cowCensusDataB).forEach((key) => {

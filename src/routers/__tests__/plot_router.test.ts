@@ -7,7 +7,6 @@ import { IPlot } from '../../db/models/plot';
 const request = supertest(plotRouter);
 
 const idTeam = '6aab56d3-ac8c-4f3b-a59b-c03e51c76e5d'; // from seeder
-const idExistingTeam = 'ab9e8aee-0f7b-4ac8-9fd5-5bb982c0367d'; // from seeder
 
 const plotDataA: Omit<IPlot, 'id'> = {
   teamId: idTeam,
@@ -27,17 +26,6 @@ const plotDataB: Omit<IPlot, 'id'> = {
   length: 20,
   width: 20,
   name: 'Changed name',
-};
-
-const existingPlotData: IPlot = {
-  id: '7c175ec1-6822-43d1-962e-8bed235100f6',
-  teamId: 'ab9e8aee-0f7b-4ac8-9fd5-5bb982c0367d',
-  photoId: 'ef57a439-4dad-4010-86cd-b2f9d58183bb',
-  latitude: 43.734173892145556,
-  longitude: -72.24597964116084,
-  length: 20,
-  width: 20,
-  name: 'Default Plot',
 };
 
 let validId = '';
@@ -135,11 +123,40 @@ describe('Working plot router', () => {
   });
 
   describe('GET /?...=...', () => {
-    it('returns 404 when plot not found', async () => {
+    it('returns empty array if no plots found', async () => {
       const getSpy = jest.spyOn(plotService, 'getPlots');
 
       const res = await request
         .get(`/?id=${invalidId}`)
+        .set('Authorization', 'Bearer dummy_token');
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual([]);
+      getSpy.mockClear();
+    });
+
+    it('returns plots by query', async () => {
+      const getSpy = jest.spyOn(plotService, 'getPlots');
+
+      const res = await request
+        .get(`/?name=${plotDataA.name}`)
+        .set('Authorization', 'Bearer dummy_token');
+
+      expect(res.status).toBe(200);
+      Object.keys(plotDataA).forEach((key) => {
+        expect(res.body[0][key]).toBe(plotDataA[key]);
+      });
+      expect(getSpy).toHaveBeenCalled();
+      getSpy.mockClear();
+    });
+  });
+
+  describe('GET /:id?...=...', () => {
+    it('returns 404 when plot not found', async () => {
+      const getSpy = jest.spyOn(plotService, 'getPlots');
+
+      const res = await request
+        .get(`/${invalidId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(404);
@@ -147,11 +164,11 @@ describe('Working plot router', () => {
       getSpy.mockClear();
     });
 
-    it('returns plot if found', async () => {
+    it('returns single plot if found - generic', async () => {
       const getSpy = jest.spyOn(plotService, 'getPlots');
 
       const res = await request
-        .get(`/?id=${validId}`)
+        .get(`/${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
@@ -162,16 +179,16 @@ describe('Working plot router', () => {
       getSpy.mockClear();
     });
 
-    it('returns plot by teamId', async () => {
+    it('returns plot if found - specific query', async () => {
       const getSpy = jest.spyOn(plotService, 'getPlots');
 
       const res = await request
-        .get(`/?teamId=${idExistingTeam}`)
+        .get(`/${validId}?name=${plotDataA.name}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
-      Object.keys(existingPlotData).forEach((key) => {
-        expect(res.body[key]).toBe(existingPlotData[key]);
+      Object.keys(plotDataA).forEach((key) => {
+        expect(res.body[key]).toBe(plotDataA[key]);
       });
       expect(getSpy).toHaveBeenCalled();
       getSpy.mockClear();
@@ -250,7 +267,7 @@ describe('Working plot router', () => {
       updateSpy.mockClear();
 
       const res = await request
-        .get(`/?id=${validId}`)
+        .get(`/${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       Object.keys(plotDataB).forEach((key) => {
@@ -293,7 +310,7 @@ describe('Working plot router', () => {
       deleteSpy.mockClear();
 
       const getRes = await request
-        .get(`/?id=${validId}`)
+        .get(`/${validId}`)
         .set('Authorization', 'Bearer dummy_token');
       expect(getRes.status).toBe(404);
     });

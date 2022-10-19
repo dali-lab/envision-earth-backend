@@ -31,10 +31,35 @@ const createCowCensus: RequestHandler = async (req: ValidatedRequest<CreateCowCe
   }
 };
 
-const getCowCensus: RequestHandler = async (req, res, next) => {
+const getCowCensuses: RequestHandler = async (req, res, next) => {
   try {
     // cannot query by bcs here
     const id = req.query?.id as string;
+    const herdId = req.query?.name as string;
+    const plotId = req.query?.plotId as string;
+    const photoId = req.query?.photoId as string;
+    const notes = req.query?.notes as string;
+    const tag = req.query?.tag as string;
+
+    const cowCensuses = await cowCensusService.getCowCensuses({
+      id,
+      herdId,
+      plotId,
+      photoId,
+      notes,
+      tag,
+    });
+
+    res.status(200).json(cowCensuses);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getCowCensus: RequestHandler = async (req, res, next) => {
+  try {
+    // cannot query by bcs here
+    const id = req.params.id;
     const herdId = req.query?.name as string;
     const plotId = req.query?.plotId as string;
     const photoId = req.query?.photoId as string;
@@ -50,6 +75,7 @@ const getCowCensus: RequestHandler = async (req, res, next) => {
       tag,
     });
     if (cowCensuses.length === 0) throw new BaseError('cowCensus not found', 404);
+    else if (cowCensuses.length > 1) throw new BaseError('Multiple cowCensus entries found', 404);
     else res.status(200).json(cowCensuses[0]);
   } catch (error) {
     next(error);
@@ -94,6 +120,7 @@ const deleteCowCensus: RequestHandler = async (req, res, next) => {
 
 const herdController = {
   createCowCensus,
+  getCowCensuses,
   getCowCensus,
   updateCowCensus,
   deleteCowCensus,
