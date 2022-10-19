@@ -30,10 +30,15 @@ router.route('/')
   .get(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
-    cowCensusController.getCowCensus,
+    cowCensusController.getCowCensuses,
   );
 
 router.route('/:id')
+  .get(
+    requireScope(UserScopes.User),
+    requireMembership(TeamScopes.User),
+    cowCensusController.getCowCensus,
+  )
   .patch(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),

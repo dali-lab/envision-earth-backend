@@ -30,10 +30,15 @@ router.route('/')
   .get(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
-    plotController.getPlot,
+    plotController.getPlots,
   );
   
 router.route('/:id')
+  .get(
+    requireScope(UserScopes.User),
+    requireMembership(TeamScopes.User),
+    plotController.getPlot,
+  )
   .patch(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
