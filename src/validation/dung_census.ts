@@ -27,8 +27,8 @@ export const UpdateDungCensusSchema = joi.object<IDungCensus>({
   id: joi.string(),
   herdId: joi.string(),
   plotId: joi.string(),
-  photoId: joi.string(),
-  ratings: joi.array().items(joi.number().required().error(() => 'Need array of numbers')),
+  photoId: joi.string().allow(null),
+  ratings: joi.array().items(joi.number().required().error(() => 'Ratings needs array of numbers')),
   notes: joi.string(),
 });
 

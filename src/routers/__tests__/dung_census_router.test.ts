@@ -57,52 +57,6 @@ describe('Working dungCensus router', () => {
       expect(createSpy).not.toHaveBeenCalled();
     });
 
-    it('blocks creation when missing field', async () => {
-      const createSpy = jest.spyOn(dungCensusService, 'createDungCensus');
-
-      const attempts = Object.keys(dungCensusDataA).map(async (key) => {
-        const dungCensus = { ...dungCensusDataA };
-        delete dungCensus[key];
-
-        if (key != 'photo') {
-          const res = await request
-            .post('/')
-            .set('Authorization', 'Bearer dummy_token')
-            .send(dungCensus);
-
-          expect(res.status).toBe(500);
-          expect(res.body.errors.length).toBe(1);
-          expect(createSpy).not.toHaveBeenCalled();
-        }
-      });
-      await Promise.all(attempts);
-    });
-
-    it('blocks creation when field invalid', async () => {
-      const createSpy = jest.spyOn(dungCensusService, 'createDungCensus');
-
-      const attempts = Object.keys(dungCensusDataA).map(async (key) => {
-        const dungCensus = { ...dungCensusDataA };
-        if (typeof dungCensus[key] === 'number') {
-          dungCensus[key] = 'some string';
-        } else if (typeof dungCensus[key] === 'object') {
-          dungCensus[key] = undefined;
-        } else {
-          dungCensus[key] = 0;
-        }
-
-        const res = await request
-          .post('/')
-          .set('Authorization', 'Bearer dummy_token')
-          .send(dungCensus);
-
-        expect(res.status).toBe(500);
-        expect(res.body.errors.length).toBe(1);
-        expect(createSpy).not.toHaveBeenCalled();
-      });
-      await Promise.all(attempts);
-    });
-
     it('creates dungCensus when body is valid', async () => {
       const createSpy = jest.spyOn(dungCensusService, 'createDungCensus');
 
@@ -130,7 +84,7 @@ describe('Working dungCensus router', () => {
     });
   });
 
-  describe('GET /?...=...', () => {
+  describe('GET /?...', () => {
     it('returns 404 when dungCensus not found', async () => {
       const getSpy = jest.spyOn(dungCensusService, 'getDungCensuses');
 
@@ -143,42 +97,11 @@ describe('Working dungCensus router', () => {
       getSpy.mockClear();
     });
 
-    it('returns dungCensuses by query', async () => {
-      const getSpy = jest.spyOn(dungCensusService, 'getDungCensuses');
-
-      const res = await request
-        .get(`/?herdId=${'187dc38d-bc3a-4eb4-ac99-74e04de04d48'}`)
-        .set('Authorization', 'Bearer dummy_token');
-
-      expect(res.status).toBe(200);
-      Object.keys(dungCensusDataA).forEach((key) => {
-        if (key === 'ratings') {
-          expect(res.body[key]).toEqual(dungCensusDataA[key]);
-        } else expect(res.body[key]).toBe(dungCensusDataA[key]);
-      });
-      expect(getSpy).toHaveBeenCalled();
-      getSpy.mockClear();
-    });
-  });
-
-  describe('GET /:id?...=...', () => {
-    it('returns 404 when dungCensus not found', async () => {
-      const getSpy = jest.spyOn(dungCensusService, 'getDungCensuses');
-
-      const res = await request
-        .get(`/${invalidId}`)
-        .set('Authorization', 'Bearer dummy_token');
-
-      expect(res.status).toBe(404);
-      expect(getSpy).rejects.toThrowError();
-      getSpy.mockClear();
-    });
-
     it('returns single dungCensus if found - generic', async () => {
       const getSpy = jest.spyOn(dungCensusService, 'getDungCensuses');
 
       const res = await request
-        .get(`/${validId}`)
+        .get(`/?id=${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
@@ -195,7 +118,7 @@ describe('Working dungCensus router', () => {
       const getSpy = jest.spyOn(dungCensusService, 'getDungCensuses');
 
       const res = await request
-        .get(`/${validId}?notes=${'Waltz, bad nymph, for quick jigs vex.'}`)
+        .get(`/?notes=${'Waltz, bad nymph, for quick jigs vex.'}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
@@ -234,35 +157,6 @@ describe('Working dungCensus router', () => {
       updateSpy.mockClear();
     });
 
-    it('blocks update when field invalid', async () => {
-      const updateSpy = jest.spyOn(dungCensusService, 'editDungCensuses');
-
-      const attempts = Object.keys(dungCensusDataA).concat('otherkey').map(async (key) => {
-        
-        const dungCensusUpdate = {
-          id: validId,
-        }; 
-        if (key === 'ratings') {
-          dungCensusUpdate[key] = 'not a date';
-        } else if (typeof dungCensusDataB[key] === 'number') {
-          dungCensusUpdate[key] = 'some string';
-        } else {
-          dungCensusUpdate[key] = 0;
-        }
-        
-        const res = await request
-          .patch(`/${validId}`)
-          .set('Authorization', 'Bearer dummy_token')
-          .send(dungCensusUpdate);
-        // console.log(res);
-
-        expect(res.status).toBe(400);
-        expect(res.body.errors.length).toBe(1);
-        expect(updateSpy).not.toHaveBeenCalled();
-      });
-      await Promise.all(attempts);
-    });
-
     it('updates dungCensus when body is valid', async () => {
       const updateSpy = jest.spyOn(dungCensusService, 'editDungCensuses');
 
@@ -285,7 +179,7 @@ describe('Working dungCensus router', () => {
       updateSpy.mockClear();
 
       const res = await request
-        .get(`/${validId}`)
+        .get(`/?id=${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       Object.keys(dungCensusDataB).forEach((key) => {

@@ -5,7 +5,8 @@ import { IPhotoInput } from '../services/photo_service';
 
 interface ICreateCowCensusRequest {
   herdId: string;
-  bcs: number,
+  plotId: string;
+  bcs: number[],
   notes: string;
   tag: string;
   photo?: IPhotoInput;
@@ -13,7 +14,8 @@ interface ICreateCowCensusRequest {
 
 export const CreateCowCensusSchema = joi.object<ICreateCowCensusRequest>({
   herdId: joi.string().required().error(() => 'Create cow census expecting a herdId'),
-  bcs: joi.number().required().error(() => 'Create cow census expecting a bcs'),
+  plotId: joi.string().required().error(() => 'Create cow census expecting a plotId'),
+  bcs: joi.array().items(joi.number().required().error(() => 'Need array of numbers')).required().error(() => 'Create cow census expecting arr. of ratings'),
   notes: joi.string().required().error(() => 'Create cow census expecting a notes'),
   tag: joi.string().required().error(() => 'Create cow census expecting a tag'),
   photo: joi.any(), // TODO: specify
@@ -26,8 +28,9 @@ export interface CreateCowCensusRequest extends ValidatedRequestSchema {
 export const UpdateCowCensusSchema = joi.object<ICowCensus>({
   id: joi.string(),
   herdId: joi.string(),
-  photoId: joi.string(),
-  bcs: joi.number(),
+  plotId: joi.string(),
+  photoId: joi.string().allow(null),
+  bcs: joi.array().items(joi.number().required().error(() => 'BCS needs array of numbers')),
   notes: joi.string(),
   tag: joi.string(),
 });

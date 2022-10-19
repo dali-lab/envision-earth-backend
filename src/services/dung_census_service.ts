@@ -66,6 +66,7 @@ const constructQuery = (params: DungCensusParams) => {
 
 export const getDungCensuses = async (params: DungCensusParams) => {
   const query = constructQuery(params);
+  
   try {
     return await DungCensusModel.findAll(query);
   } catch (e : any) {
@@ -73,10 +74,14 @@ export const getDungCensuses = async (params: DungCensusParams) => {
   }
 };
 
-export const editDungCensuses = async (herd: Partial<IDungCensus>, params: DungCensusParams) => {
+export const editDungCensuses = async (dungCensus: Partial<IDungCensus>, params: DungCensusParams) => {
   const query = constructQuery(params);
+  if (dungCensus.ratings) {
+    dungCensus.ratings = JSON.stringify(dungCensus.ratings).replace('[', '{').replace(']', '}');
+  }
+
   try {
-    return (await DungCensusModel.update(herd, { ...query, returning: true }))[1];
+    return (await DungCensusModel.update(dungCensus, { ...query, returning: true }))[1];
   } catch (e: any) {
     throw new BaseError(e.message, 500);
   }
@@ -117,11 +122,11 @@ export const createDungCensus = async (params: Omit<IDungCensus, 'id' | 'photoId
   }
 };
 
-const herdService = {
+const dungCensusService = {
   createDungCensus,
   getDungCensuses,
   editDungCensuses,
   deleteDungCensuses,
 };
 
-export default herdService;
+export default dungCensusService;
