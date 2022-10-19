@@ -8,6 +8,7 @@ import herdService from './herd_service';
 import cowCensusService from './cow_census_service';
 import plotService from './plot_service';
 import dungCensusService from './dung_census_service';
+import forageQualityCensusService from './forage_quality_census_service';
 
 export {
   userService,
@@ -20,4 +21,5 @@ export {
   cowCensusService,
   plotService,
   dungCensusService,
+  forageQualityCensusService,
 };

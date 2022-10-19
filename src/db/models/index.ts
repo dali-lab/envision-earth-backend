@@ -8,6 +8,7 @@ import CowCensus from './cow_census';
 import Photo from './photo';
 import Plot from './plot';
 import DungCensus from './dung_census';
+import ForageQualityCensus from './forage_quality_census';
 
 export {
   User,
@@ -20,4 +21,5 @@ export {
   Photo,
   Plot,
   DungCensus,
+  ForageQualityCensus,
 };
