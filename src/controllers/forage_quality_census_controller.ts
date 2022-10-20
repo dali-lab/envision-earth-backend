@@ -42,7 +42,7 @@ const getForageQualityCensuses: RequestHandler = async (req, res, next) => {
       rating,
       notes,
     });
-    res.status(200).json(forageQualityCensuses[0]);
+    res.status(200).json(forageQualityCensuses);
   } catch (error) {
     next(error);
   }
