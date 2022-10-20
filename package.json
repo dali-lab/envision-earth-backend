@@ -2,17 +2,11 @@
   "name": "crud-template-backend-postgres",
   "version": "1.0.0",
   "description": "DALI Lab Backend CRUD template w/ TypeScript, PostgreSQL",
-  "productionURL": "https://your-api-url.here",
+  "productionURL": "https://grazing-earth-backend.onrender.com",
   "productionClientURL": "https://your-app-url.here",
   "main": "src/server.js",
-  "repository": "https://github.com/dali-lab/crud-template-backend-postgres",
+  "repository": "https://github.com/dali-lab/grazing-earth-backend",
   "author": "Eric Lu <Eric.J.Lu.25@dartmouth.edu>",
-  "contributors": [
-    "Adam McQuilkin <Adam.J.Mcquilkin.22@Dartmouth.edu>",
-    "Alex Lopez <Alejandro.A.Lopez.Cochachi.23@Dartmouth.edu>",
-    "Ziray Hao <Ziray.Hao.22@Dartmouth.edu>",
-    "Jack Keane <John.F.Keane.22@Dartmouth.edu>"
-  ],
   "license": "MIT",
   "scripts": {
     "lint": "eslint ./src",

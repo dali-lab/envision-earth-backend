@@ -11,6 +11,12 @@ module.exports = {
       `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
     dialect: 'postgres',
     logging: true,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
   },
   test: {
     url:
@@ -18,6 +24,12 @@ module.exports = {
       `postgres://${process.env.TEST_DB_NAME}:${process.env.TEST_DB_PASS}@${process.env.TEST_DB_HOST}:${process.env.TEST_DB_PORT}/${process.env.TEST_DB_NAME}`,
     dialect: 'postgres',
     logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
   },
   production: {
     url:
@@ -33,5 +45,6 @@ module.exports = {
     },
   },
 };
+
 
 
