@@ -30,10 +30,15 @@ router.route('/')
   .get(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
-    forageQualityCensusController.getForageQualityCensus,
+    forageQualityCensusController.getForageQualityCensuses,
   );
 
 router.route('/:id')
+  .get(
+    requireScope(UserScopes.User),
+    requireMembership(TeamScopes.User),
+    forageQualityCensusController.getForageQualityCensus,
+  )
   .patch(
     requireScope(UserScopes.User),
     requireMembership(TeamScopes.User),
