@@ -11,7 +11,7 @@ const db = new Sequelize( // Connect the database
     logging: false,
     models: Object.values(models),
     dialectOptions: {
-      ssl: process.env.NODE_ENV === 'production' && {
+      ssl: {
         require: true,
         rejectUnauthorized: false,
       },
