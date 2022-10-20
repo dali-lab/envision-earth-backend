@@ -83,12 +83,42 @@ describe('Working forageQualityCensus router', () => {
     });
   });
 
-  describe('GET /?...', () => {
-    it('returns 404 when forageQualityCensus not found', async () => {
+  describe('GET /?...=...', () => {
+    it('returns empty array if no forageQualityCensuses found', async () => {
       const getSpy = jest.spyOn(forageQualityCensusService, 'getForageQualityCensuses');
 
       const res = await request
         .get(`/?id=${invalidId}`)
+        .set('Authorization', 'Bearer dummy_token');
+
+      expect(res.status).toBe(200);
+      expect(res.body).toBe('');
+      getSpy.mockClear();
+    });
+
+    it('returns forageQualityCensuses by query', async () => {
+      const getSpy = jest.spyOn(forageQualityCensusService, 'getForageQualityCensuses');
+
+      const res = await request
+        .get(`/?notes=${forageQualityCensusDataA.notes}`)
+        .set('Authorization', 'Bearer dummy_token');
+
+      expect(res.status).toBe(200);
+
+      Object.keys(forageQualityCensusDataA).forEach((key) => {
+        expect(res.body[key]).toBe(forageQualityCensusDataA[key]);
+      });
+      expect(getSpy).toHaveBeenCalled();
+      getSpy.mockClear();
+    });
+  });
+
+  describe('GET /:id?...=...', () => {
+    it('returns 404 when forageQualityCensus not found', async () => {
+      const getSpy = jest.spyOn(forageQualityCensusService, 'getForageQualityCensuses');
+
+      const res = await request
+        .get(`/${invalidId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(404);
@@ -100,7 +130,7 @@ describe('Working forageQualityCensus router', () => {
       const getSpy = jest.spyOn(forageQualityCensusService, 'getForageQualityCensuses');
 
       const res = await request
-        .get(`/?id=${validId}`)
+        .get(`/${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
@@ -115,7 +145,7 @@ describe('Working forageQualityCensus router', () => {
       const getSpy = jest.spyOn(forageQualityCensusService, 'getForageQualityCensuses');
 
       const res = await request
-        .get(`/?notes=${forageQualityCensusDataA.notes}`)
+        .get(`/${validId}?notes=${forageQualityCensusDataA.notes}`)
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
@@ -172,7 +202,7 @@ describe('Working forageQualityCensus router', () => {
       updateSpy.mockClear();
 
       const res = await request
-        .get(`/?id=${validId}`)
+        .get(`/${validId}`)
         .set('Authorization', 'Bearer dummy_token');
 
       Object.keys(forageQualityCensusDataB).forEach((key) => {

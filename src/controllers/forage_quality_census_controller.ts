@@ -27,7 +27,7 @@ const createForageQualityCensus: RequestHandler = async (req: ValidatedRequest<C
   }
 };
 
-const getForageQualityCensus: RequestHandler = async (req, res, next) => {
+const getForageQualityCensuses: RequestHandler = async (req, res, next) => {
   try {
     const id = req.query?.id as string;
     const plotId = req.query?.plotId as string;
@@ -42,7 +42,29 @@ const getForageQualityCensus: RequestHandler = async (req, res, next) => {
       rating,
       notes,
     });
+    res.status(200).json(forageQualityCensuses[0]);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getForageQualityCensus: RequestHandler = async (req, res, next) => {
+  try {
+    const id = req.params.id as string;
+    const plotId = req.query?.plotId as string;
+    const photoId = req.query?.photoId as string;
+    const rating = Number(req.query?.rating);
+    const notes = req.query?.notes as string;
+    
+    const forageQualityCensuses = await forageQualityCensusService.getForageQualityCensuses({
+      id,
+      plotId,
+      photoId,
+      rating,
+      notes,
+    });
     if (forageQualityCensuses.length === 0) throw new BaseError('ForageQualityCensus not found', 404);
+    else if (forageQualityCensuses.length > 1) throw new BaseError('Multiple ForageQualityCensus entries found', 404);
     else res.status(200).json(forageQualityCensuses[0]);
   } catch (error) {
     next(error);
@@ -85,6 +107,7 @@ const deleteForageQualityCensus: RequestHandler = async (req, res, next) => {
 
 const forageQualityCensusController = {
   createForageQualityCensus,
+  getForageQualityCensuses,
   getForageQualityCensus,
   updateForageQualityCensus,
   deleteForageQualityCensus,
