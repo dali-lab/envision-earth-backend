@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
-import PhotoModel, { IPhoto } from 'db/models/photo';
+import PhotoModel from 'db/models/photo';
 import dotenv from 'dotenv';
 import { DatabaseQuery } from '../constants';
 import { Op } from 'sequelize';
@@ -19,15 +19,6 @@ export interface PhotoParams {
   fileName: string,
   fileType: string,
   link: string,
-}
-
-export interface CreatePhotoRequestSchema {
-  file: File,
-}
-
-export interface UpdatePhotoRequestSchema {
-  link: string,
-  file: File,
 }
 
 export interface PhotoS3Signature {
@@ -67,12 +58,6 @@ const getPhotos = async (params: PhotoParams) => {
   }
 };
 
-const editPhotos = async (photo: Partial<IPhoto>, params: PhotoParams) => {
-  const query = constructQuery(params);
-  // TODO: AWS editing function
-  return (await PhotoModel.update(photo, { ...query, returning: true }))[1];
-};
-
 const deletePhotos = async (params: PhotoParams) => {
   const query = constructQuery(params);
   try {
@@ -107,7 +92,6 @@ const createPhoto = async (file: IPhotoInput) => {
 
 const photoService = {
   getPhotos,
-  editPhotos,
   deletePhotos,
   createPhoto,
 };
