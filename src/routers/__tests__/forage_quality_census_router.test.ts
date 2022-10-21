@@ -92,7 +92,7 @@ describe('Working forageQualityCensus router', () => {
         .set('Authorization', 'Bearer dummy_token');
 
       expect(res.status).toBe(200);
-      expect(res.body).toBe('');
+      expect(res.body).toEqual([]);
       getSpy.mockClear();
     });
 

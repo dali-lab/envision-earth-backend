@@ -9,7 +9,7 @@ import { TeamScopes } from 'db/models/team';
 import { photoController } from 'controllers';
 import { errorHandler } from 'errors';
 import { validationErrorHandler } from 'validation';
-import { CreatePhotoSchema, UpdatePhotoSchema } from 'validation/photo'; const router = express();
+import { CreatePhotoSchema } from 'validation/photo'; const router = express();
 const validator = createValidator({ passError: true });
 
 // TODO: Move middleware attachment to test file
@@ -33,12 +33,6 @@ router.route('/:id')
     requireSelf(UserScopes.Admin),
     requireMembership(TeamScopes.User),
     photoController.getPhoto,
-  )
-  .patch(
-    requireScope(UserScopes.User),
-    requireMembership(TeamScopes.User),
-    validator.body(UpdatePhotoSchema),
-    photoController.updatePhoto,
   )
   .delete(
     requireScope(UserScopes.User),
