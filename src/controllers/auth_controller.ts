@@ -1,7 +1,6 @@
 import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
 import env from 'env-var';
-// import nodemailer from 'nodemailer';
 import { RequestHandler } from 'express';
 import { ValidatedRequest } from 'express-joi-validation';
 import { userService, verificationCodeService } from 'services';
@@ -9,22 +8,9 @@ import { IUser } from 'db/models/user';
 import { RequestWithJWT } from 'auth/requests';
 import { ResendCodeRequest, SignUpUserRequest, VerifyUserRequest } from 'validation/auth';
 import { BaseError } from 'errors';
+// import { sendEmail } from 'util/email';
 
 dotenv.config();
-
-/* @todo: Reimplement later
-// create reusable transporter object using the default SMTP transport
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.GOOGLE_CLIENT_EMAIL,
-    pass: process.env.GOOGLE_CLIENT_PASS,
-  },
-  from: process.env.GOOGLE_CLIENT_EMAIL,
-});
-*/
 
 // Delete password field when sending through HTTP
 const protectUserResponse = (user: IUser): Omit<IUser, 'password'> => {
@@ -56,16 +42,10 @@ const signUpUser: RequestHandler = async (req: ValidatedRequest<SignUpUserReques
     });
     
     await verificationCodeService.createVerificationCode({ email });
-    /* @todo: Reimplement later
-    const codePayload = await verificationCodeService.createVerificationCode({ email });
-    await transporter.sendMail({
-      from: `App <${process.env.GOOGLE_CLIENT_EMAIL}>`, 
-      to: email,
-      subject: 'Verification Code', 
-      html: `<html><p>You must enter this code in the app before you can gain access. Your code is:</p><p>${codePayload.code}</p><p>It will expire in 5 minutes.</p></html>`,
-    });
-    */
-
+    // const codePayload = await verificationCodeService.createVerificationCode({ email });
+    // const html = `<html><p>You must enter this code in the app before you can gain access. Your code is:</p><p>${codePayload.code}</p><p>It will expire in 5 minutes.</p></html>`;
+    // await sendEmail({ email, subject: 'Verification Code', html });
+    
     // Save the user then transmit to frontend
     res.status(201).json({ token: tokenForUser(savedUser), user: protectUserResponse(savedUser) });
   } catch (error : any) {
@@ -91,16 +71,10 @@ const resendCode: RequestHandler = async (req: ValidatedRequest<ResendCodeReques
     if (users.length === 0) throw new BaseError('No user with that email', 400);
     
     await verificationCodeService.createVerificationCode({ email });
-    /* @todo: Reimplement later
-    const codePayload = await verificationCodeService.createVerificationCode({ email });
-    await transporter.sendMail({
-      from: `App <${process.env.GOOGLE_CLIENT_EMAIL}>`, 
-      to: email,
-      subject: 'Verification Code', 
-      html: `<html><p>You must enter this code in the app before you can gain access. Your code is:</p><p>${codePayload.code}</p><p>It will expire in 5 minutes.</p></html>`,
-    });
-    */
-    
+    // const codePayload = await verificationCodeService.createVerificationCode({ email });
+    // const html = `<html><p>You must enter this code in the app before you can gain access. Your code is:</p><p>${codePayload.code}</p><p>It will expire in 5 minutes.</p></html>`;
+    // await sendEmail({ email, subject: 'Verification Code', html });
+      
     res.sendStatus(201);
   } catch (e: any) {
     next(e);
