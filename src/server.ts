@@ -10,6 +10,7 @@ import {
   userRouter, 
   resourceRouter,
   teamRouter,
+  syncRouter,
   membershipRouter,
   herdRouter,
   cowCensusRouter,
@@ -46,6 +47,7 @@ app.get('/', (req, res) => {
 app.use('/auth', authRouter); // NOTE: Not secured
 app.use('/users', userRouter); // NOTE: Completely secured to users
 app.use('/resources', resourceRouter); // NOTE: Partially secured to users
+app.use('/sync', syncRouter);
 app.use('/teams', teamRouter);
 app.use('/memberships', membershipRouter);
 app.use('/herds', herdRouter);

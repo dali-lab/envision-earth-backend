@@ -2,6 +2,7 @@ import resourceController from './resource_controller';
 import authController from './auth_controller';
 import userController from './user_controller';
 import teamController from './team_controller';
+import syncController from './sync_controller';
 import membershipController from './membership_controller';
 import photoController from './photo_controller';
 import herdController from './herd_controller';
@@ -15,6 +16,7 @@ export {
   authController,
   userController,
   teamController,
+  syncController,
   membershipController,
   photoController,
   herdController,

@@ -12,7 +12,7 @@
     "lint": "eslint ./src",
     "test": "npm run lint && NODE_ENV=test jest --runInBand --coverage",
     "dev": "nodemon -r tsconfig-paths/register src/server.ts --exec ts-node",
-    "start": "NODE_OPTIONS=--max-old-space-size=8192 ts-node --transpile-only -r tsconfig-paths/register src/server.ts",
+    "start": "NODE_OPTIONS=--max-old-space-size=8192 ts-node -r tsconfig-paths/register src/server.ts",
     "build": "npm install && tsc",
     "prod": "npm run build && node lib/server.js"
   },

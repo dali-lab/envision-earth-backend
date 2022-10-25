@@ -3,7 +3,7 @@ import { ValidatedRequestSchema, ContainerTypes } from 'express-joi-validation';
 import { ICowCensus } from 'db/models/cow_census';
 import { IPhotoInput } from '../services/photo_service';
 
-interface ICreateCowCensusRequest {
+export interface ICreateCowCensusRequest {
   herdId: string;
   plotId: string;
   bcs: number[],
