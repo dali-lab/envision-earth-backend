@@ -118,7 +118,7 @@ const deleteCowCensus: RequestHandler = async (req, res, next) => {
   }
 };
 
-const herdController = {
+const cowCensusController = {
   createCowCensus,
   getCowCensuses,
   getCowCensus,
@@ -126,4 +126,4 @@ const herdController = {
   deleteCowCensus,
 };
 
-export default herdController;
+export default cowCensusController;
