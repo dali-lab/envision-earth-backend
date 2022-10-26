@@ -10,6 +10,7 @@ import cowCensusController from './cow_census_controller';
 import plotController from './plot_controller';
 import dungCensusController from './dung_census_controller';
 import forageQualityCensusController from './forage_quality_census_controller';
+import forageQuantityCensusController from './forage_quantity_census_controller';
 
 export {
   resourceController,
@@ -24,4 +25,5 @@ export {
   plotController,
   dungCensusController,
   forageQualityCensusController,
+  forageQuantityCensusController,
 };

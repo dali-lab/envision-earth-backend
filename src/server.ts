@@ -17,6 +17,7 @@ import {
   plotRouter,
   dungCensusRouter,
   forageQualityCensusRouter,
+  forageQuantityCensusRouter,
 } from './routers';
 import db from './db/db';
 
@@ -55,6 +56,7 @@ app.use('/cow_censuses', cowCensusRouter);
 app.use('/plots', plotRouter);
 app.use('/dung_censuses', dungCensusRouter);
 app.use('/forage_quality_censuses', forageQualityCensusRouter);
+app.use('/forage_quantity_censuses', forageQuantityCensusRouter);
 app.use((req, res) => { // Custom 404 middleware
   res.status(404).json({ message: 'The route you\'ve requested doesn\'t exist' });
 });
