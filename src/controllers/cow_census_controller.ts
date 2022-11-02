@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import { RequestHandler } from 'express';
 import { ValidatedRequest } from 'express-joi-validation';
 import { getSuccessfulDeletionMessage } from '../constants';
@@ -5,6 +6,8 @@ import { cowCensusService } from 'services';
 import { CreateCowCensusRequest, UpdateCowCensusRequest } from 'validation/cow_census';
 import { ICowCensus } from 'db/models/cow_census';
 import { BaseError } from 'errors';
+
+dotenv.config();
 
 const createCowCensus: RequestHandler = async (req: ValidatedRequest<CreateCowCensusRequest>, res, next) => {
   try {
@@ -27,6 +30,10 @@ const createCowCensus: RequestHandler = async (req: ValidatedRequest<CreateCowCe
 
     res.status(201).json(newCowCensus);
   } catch (error) {
+    if (process.env.DEBUG && process.env.DEBUG === 'true') {
+      console.log(error);
+    }
+    
     next(error);
   }
 };

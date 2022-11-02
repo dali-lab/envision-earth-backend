@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import dotenv from 'dotenv';
 import { ErrorRequestHandler } from 'express';
 import BaseError from './BaseError';
 import DocumentNotFoundError from './DocumentNotFoundError';
 import ServerError from './ServerError';
+
+dotenv.config();
 
 const createError = (err: any): BaseError => {
   switch (true) {
@@ -21,6 +24,9 @@ const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     ? 'Request error'
     : 'Server error';
 
+  if (process.env.DEBUG && process.env.DEBUG === 'true') {
+    console.log(err);
+  }
   res.status(error.code).json({ message, errors: [error.message] });
 };
 
