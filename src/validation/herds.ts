@@ -3,11 +3,11 @@ import { ValidatedRequestSchema, ContainerTypes } from 'express-joi-validation';
 import { IHerd } from 'db/models/herd';
 
 export const CreateHerdSchema = joi.object<Omit<IHerd, 'id' | 'role'>>({
-  teamId: joi.string().required().error(() => 'Create herd expecting a teamId'),
-  breed: joi.string().required().error(() => 'Create herd expecting a breed'),
-  count: joi.number().required().error(() => 'Create herd expecting a count'),
-  breedingDate: joi.date().required().error(() => 'Create herd expecting a breedingDate'),
-  calvingDate: joi.date().required().error(() => 'Create herd expecting a calvingDate'),
+  teamId: joi.string().required().error(() => new Error('Create herd expecting a teamId')),
+  breed: joi.string().required().error(() => new Error('Create herd expecting a breed')),
+  count: joi.number().required().error(() => new Error('Create herd expecting a count')),
+  breedingDate: joi.date().required().error(() => new Error('Create herd expecting a breedingDate')),
+  calvingDate: joi.date().required().error(() => new Error('Create herd expecting a calvingDate')),
 });
 
 export interface CreateHerdRequest extends ValidatedRequestSchema {

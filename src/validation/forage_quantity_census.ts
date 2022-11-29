@@ -11,9 +11,9 @@ interface ICreateForageQuantityCensusRequest {
 }
 
 export const CreateForageQuantityCensusSchema = joi.object<ICreateForageQuantityCensusRequest>({
-  plotId: joi.string().required().error(() => 'Create ForageQuantityCensus expecting a plotId'),
-  sda: joi.number().required().error(() => 'Create ForageQuantityCensus expecting a sda'),
-  notes: joi.string().required().error(() => 'Create ForageQuantityCensus expecting a notes'),
+  plotId: joi.string().required().error(() => new Error('Create ForageQuantityCensus expecting a plotId')),
+  sda: joi.number().required().error(() => new Error('Create ForageQuantityCensus expecting a sda')),
+  notes: joi.string().required().error(() => new Error('Create ForageQuantityCensus expecting a notes')),
   photo: joi.any(), // TODO: specify
 });
 

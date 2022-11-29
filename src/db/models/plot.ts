@@ -37,7 +37,7 @@ class Plot extends Model<IPlot> implements IPlot {
     teamId: string;
 
   @ForeignKey(() => Photo)
-  @AllowNull(false)
+  @AllowNull(true)
   @Column(DataTypes.UUID)
     photoId: string;
 
