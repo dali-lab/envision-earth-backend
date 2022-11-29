@@ -99,6 +99,7 @@ export const createMembership = async (params: Omit<IMembership, 'id'>) => {
       id: uuidv4(),
     });
   } catch (e: any) {
+    console.log(e); // temp
     throw new BaseError(e.message, 500);
   }
 };

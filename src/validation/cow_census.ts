@@ -13,11 +13,11 @@ export interface ICreateCowCensusRequest {
 }
 
 export const CreateCowCensusSchema = joi.object<ICreateCowCensusRequest>({
-  herdId: joi.string().required().error(() => 'Create cow census expecting a herdId'),
-  plotId: joi.string().required().error(() => 'Create cow census expecting a plotId'),
-  bcs: joi.array().items(joi.number().required().error(() => 'Need array of numbers')).required().error(() => 'Create cow census expecting arr. of ratings'),
-  notes: joi.string().required().error(() => 'Create cow census expecting a notes'),
-  tag: joi.string().required().error(() => 'Create cow census expecting a tag'),
+  herdId: joi.string().required().error(() => new Error('Create cow census expecting a herdId')),
+  plotId: joi.string().required().error(() => new Error('Create cow census expecting a plotId')),
+  bcs: joi.array().items(joi.number().required().error(() => new Error('Need array of numbers'))).required().error(() => new Error('Create cow census expecting arr. of ratings')),
+  notes: joi.string().required().error(() => new Error('Create cow census expecting a notes')),
+  tag: joi.string().required().error(() => new Error('Create cow census expecting a tag')),
   photo: joi.any(), // TODO: specify
 });
 

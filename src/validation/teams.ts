@@ -3,11 +3,11 @@ import { ValidatedRequestSchema, ContainerTypes } from 'express-joi-validation';
 import { ITeam } from '../db/models/team';
 
 export const CreateTeamSchema = joi.object<Omit<ITeam, 'id' | 'code'>>({
-  name: joi.string().required().error(() => 'Create team expecting a name'),
-  acreSize: joi.number().required().error(() => 'Create team expecting an acreSize'),
-  address: joi.string().required().error(() => 'Create team expecting an address'),
-  yrsRanch: joi.number().required().error(() => 'Create team expecting a yrsRanch'),
-  yrsHolMang: joi.number().required().error(() => 'Create team expecting a yrsHolMang'),
+  name: joi.string().required().error(() => new Error('Create team expecting a name')),
+  acreSize: joi.number().required().error(() => new Error('Create team expecting an acreSize')),
+  address: joi.string().required().error(() => new Error('Create team expecting an address')),
+  yrsRanch: joi.number().required().error(() => new Error('Create team expecting a yrsRanch')),
+  yrsHolMang: joi.number().required().error(() => new Error('Create team expecting a yrsHolMang')),
 });
 
 export interface CreateTeamRequest extends ValidatedRequestSchema {

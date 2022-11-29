@@ -12,11 +12,11 @@ interface ICreateDungCensusRequest {
 }
 
 export const CreateDungCensusSchema = joi.object<ICreateDungCensusRequest>({
-  herdId: joi.string().required().error(() => 'Create dung census expecting a herdId'),
-  plotId: joi.string().required().error(() => 'Create dung census expecting a plotId'),
+  herdId: joi.string().required().error(() => new Error('Create dung census expecting a herdId')),
+  plotId: joi.string().required().error(() => new Error('Create dung census expecting a plotId')),
   photo: joi.any(), // TODO: specify
-  ratings: joi.array().items(joi.number().required().error(() => 'Need array of numbers')).required().error(() => 'Create dung census expecting arr. of ratings'),
-  notes: joi.string().required().error(() => 'Create dung census expecting notes'),
+  ratings: joi.array().items(joi.number().required().error(() => new Error('Need array of numbers')).required().error(() => new Error('Create dung census expecting arr. of ratings'))),
+  notes: joi.string().required().error(() => new Error('Create dung census expecting notes')),
 });
 
 export interface CreateDungCensusRequest extends ValidatedRequestSchema {
