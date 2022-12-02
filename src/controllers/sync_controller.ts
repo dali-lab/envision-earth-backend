@@ -1,13 +1,17 @@
 import { RequestHandler } from 'express';
 import { ValidatedRequest } from 'express-joi-validation';
-import { cowCensusService } from 'services';
+import { cowCensusService, dungCensusService, forageQualityCensusService, forageQuantityCensusService } from 'services';
 import { CreateSyncRequest } from 'validation/sync';
-import { inspect } from 'util';
 import { ICowCensus } from 'db/models/cow_census';
-import { ICreateCowCensusRequest } from 'validation/cow_census';
+import { IDungCensus } from 'db/models/dung_census';
+import { IForageQualityCensus } from 'db/models/forage_quality_census';
+import { IForageQuantityCensus } from 'db/models/forage_quantity_census';
 
 interface SyncResponse {
   cowCensuses: ICowCensus[],
+  dungCensuses: IDungCensus[],
+  forageQualityCensuses: IForageQualityCensus[],
+  forageQuantityCensuses: IForageQuantityCensus[],
 }
 
 const sync: RequestHandler = async (req: ValidatedRequest<CreateSyncRequest>, res, next) => {
@@ -15,9 +19,12 @@ const sync: RequestHandler = async (req: ValidatedRequest<CreateSyncRequest>, re
     const { upserted } = req.body;
     const result: SyncResponse = {
       cowCensuses: [],
+      dungCensuses: [],
+      forageQualityCensuses: [],
+      forageQuantityCensuses: [],
     };
     
-    upserted.cowCensusRequests.forEach(async (census: ICreateCowCensusRequest) => {
+    for (const census of upserted.cowCensusRequests) {
       const {
         herdId,
         plotId,
@@ -25,8 +32,7 @@ const sync: RequestHandler = async (req: ValidatedRequest<CreateSyncRequest>, re
         notes,
         tag,
         photo,
-      } = census;
-      
+      } = census; 
       const newCowCensus = await cowCensusService.createCowCensus({ 
         herdId,
         plotId,
@@ -34,13 +40,54 @@ const sync: RequestHandler = async (req: ValidatedRequest<CreateSyncRequest>, re
         notes,
         tag,
       }, photo);
-
       result.cowCensuses.push(newCowCensus);
-    });
+    }
+    for (const census of upserted.dungCensusRequests) {
+      const {
+        herdId,
+        plotId,
+        photo,
+        ratings,
+        notes,
+      } = census;
+      const newDungCensus = await dungCensusService.createDungCensus({ 
+        herdId,
+        plotId,
+        ratings,
+        notes,
+      }, photo);
+      result.dungCensuses.push(newDungCensus);
+    }
+    for (const census of upserted.forageQualityCensusRequests) {
+      const {
+        plotId,
+        photo,
+        rating,
+        notes,
+      } = census;
+      const newForageQualityCensus = await forageQualityCensusService.createForageQualityCensus({ 
+        plotId,
+        rating,
+        notes,
+      }, photo);
+      result.forageQualityCensuses.push(newForageQualityCensus);
+    }
+    for (const census of upserted.forageQuantityCensusRequests) {
+      const {
+        plotId,
+        photo,
+        sda,
+        notes,
+      } = census;
+      const newForageQuantityCensus = await forageQuantityCensusService.createForageQuantityCensus({ 
+        plotId,
+        sda,
+        notes,
+      }, photo);
+      result.forageQuantityCensuses.push(newForageQuantityCensus);
+    }
 
-    // We've kept this to monitor syncing in prod, 
-    // but this can be removed once there is total confidence in syncing
-    console.log('Sync result:', inspect(result, { depth: 5 }));
+    console.log('Sync result:', result);
     res.status(201).json(result);
     return result;
   } catch (error) {

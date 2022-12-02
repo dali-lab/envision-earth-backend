@@ -3,7 +3,7 @@ import { ValidatedRequestSchema, ContainerTypes } from 'express-joi-validation';
 import { IForageQualityCensus } from 'db/models/forage_quality_census';
 import { IPhotoInput } from '../services/photo_service';
 
-interface ICreateForageQualityCensusRequest {
+export interface ICreateForageQualityCensusRequest {
   plotId: string;
   photo?: IPhotoInput;
   rating: number,

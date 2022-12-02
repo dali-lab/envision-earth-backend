@@ -47,22 +47,22 @@ Backend for the [Grazing Earth mobile app](https://github.com/dali-lab/grazing-e
     - Run `brew install postgresql` if PostgreSQL isn't installed
     - If you'd like to use a GUI to interact with PostgreSQL, download one. We recommend [Postico](https://eggerapps.at/postico/)
 3. Create a PostgreSQL DB called `grazing_earth` if setting up locally, using your GUI of choice (Postico or pgAdmin).
-4. Set up Google Developer API (for email sending)
-   - You will need to enable [2 Step Auth](https://support.google.com/accounts/answer/185839) on your desired Google account and generate an [App Specific Password](https://myaccount.google.com/security). See this [StackExchange thread](https://stackoverflow.com/questions/19877246/nodemailer-with-gmail-and-nodejs?answertab=modifieddesc#tab-top) for more details.
-   - Alternatively just comment out all the nodemailer stuff if you don't want to use/need to set up the email service.
-   - Note that you'll have to do a lot more email/domain configuration before the email service will adequately work in production. (Instructions for this TBD)
-5. Create a `.env` file in the root directory
+4. Create a `.env` file in the root directory
   - Should be in the following format:
   - ```
     AUTH_SECRET=*secret assortment of characters used for encryption*
-    PORT=*insert desired backend server port here*
+    PORT=4000
     DATABASE_URL=postgres://username:password@localhost:5432/grazing_earth
-    GOOGLE_CLIENT_EMAIL=*Google Developer API email*
-    GOOGLE_CLIENT_PASS=*Google Developer API password*
+    AWS_ACCESS_KEY_ID=*see credentials doc*
+    AWS_SECRET_ACCESS_KEY=*see credentials doc*
+    S3_BUCKET_NAME=*see credentials doc*
+    SENDGRID_EMAIL=*see credentials doc*
+    SENDGRID_API_KEY=*see credentials doc*
+    DEBUG=true
     ```
-6. Run `npx sequelize db:migrate` to apply migrations to DB.
-7. Run `npx sequelize db:seed:all` to load initial data.
-8. App should be ready for use now
+5. Run `npx sequelize db:migrate` to apply migrations to DB.
+6. Run `npx sequelize db:seed:all` to load initial data.
+7. App should be ready for use now
   - `npm start` to run in production mode
   - `npm run dev` to run with hot reloading
 
@@ -81,5 +81,3 @@ Jest unit testing is set up for the controllers, routers, and services. Remember
 
 ## Authors & Credits
 - Eric Lu '25
-
-Additional credit goes to Adam McQuilkin '22, Ziray Hao '22, Jack Keane '22, Thomas Monfre '21 for developing the original DALI [CRUD Template Backend](https://github.com/dali-lab/crud-template-backend), which this starter pack was evolved from.

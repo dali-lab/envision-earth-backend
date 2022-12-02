@@ -3,7 +3,7 @@ import { ValidatedRequestSchema, ContainerTypes } from 'express-joi-validation';
 import { IDungCensus } from 'db/models/dung_census';
 import { IPhotoInput } from '../services/photo_service';
 
-interface ICreateDungCensusRequest {
+export interface ICreateDungCensusRequest {
   herdId: string;
   plotId: string;
   photo?: IPhotoInput;
