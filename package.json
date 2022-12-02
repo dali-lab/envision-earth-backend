@@ -1,9 +1,8 @@
 {
-  "name": "crud-template-backend-postgres",
+  "name": "grazing-earth-backend",
   "version": "1.0.0",
-  "description": "DALI Lab Backend CRUD template w/ TypeScript, PostgreSQL",
+  "description": "Backend for the Grazing Earth mobile app",
   "productionURL": "https://grazing-earth-backend.onrender.com",
-  "productionClientURL": "https://your-app-url.here",
   "main": "src/server.js",
   "repository": "https://github.com/dali-lab/grazing-earth-backend",
   "author": "Eric Lu <Eric.J.Lu.25@dartmouth.edu>",
